@@ -1,18 +1,14 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 
-import {
-  Page,
-  SearchResults,
-  SpotifyApi,
-  TopTracksResult,
-  Track,
-} from "@spotify/web-api-ts-sdk";
+import { Page, SpotifyApi, Track } from "@spotify/web-api-ts-sdk";
 import { useSession, signOut, signIn } from "next-auth/react";
 import { useEffect, useState } from "react";
 import sdk from "./lib/spotify-sdk/ClientInstance";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { map } from "lodash";
+import Link from "next/link";
+import Image from "next/image";
+import { Loader } from "./components/Loader";
 
 export default function Home() {
   const session = useSession();
@@ -32,25 +28,7 @@ export default function Home() {
   }
 
   return (
-    <div className="h-full bg-gray-900 px-4 py-4 sm:px-6 sm:py-4 md:px-8 md:py-6 lg:px-24 lg:py-12">
-      <div className="w-full flex justify-between items-center">
-        <div className="flex gap-x-1 items-center">
-          <i className="bi bi-spotify"></i>
-          <h2 className="text-2xl font-bold">Spotify Plus</h2>
-        </div>
-        <div className="flex items-center justify-between gap-x-1 bg-gray-300 px-2 py-1 rounded-xl">
-          <img
-            src={session.data.user?.image || ""}
-            alt=""
-            width={30}
-            height={30}
-            className="rounded-full"
-          />
-          <h2 className="text-md font-medium text-gray-900">
-            {session.data.user?.name}
-          </h2>
-        </div>
-      </div>
+    <div className="h-full bg-gray-900 px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8 lg:px-24 lg:py-10">
       <WelcomeSection sdk={sdk} />
       <TopTracks sdk={sdk} />
       {/* <SpotifySearch sdk={sdk} /> */}
@@ -74,11 +52,11 @@ const WelcomeSection = ({ sdk }: { sdk: SpotifyApi }) => {
     <section className="w-full py-4 md:py-8 lg:py-12 xl:py-18">
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center space-y-4 text-center">
-          <div className="space-y-2">
+          <div className="">
             <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
               Personalized Insights from Spotify
             </h1>
-            <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
+            <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl py-4 dark:text-gray-400">
               Uncover your music journey with personalized analytics and data.
             </p>
           </div>
@@ -113,28 +91,34 @@ const TopTracks = ({ sdk }: { sdk: SpotifyApi }) => {
   useEffect(() => {
     (async () => {
       try {
-        const results = await sdk.currentUser.topItems("tracks", "medium_term" , 50);
-        console.log(results);
+        const results = await sdk.currentUser.topItems(
+          "tracks",
+          "long_term",
+          30
+        );
         setYourTopTracks(results);
       } catch (error: any) {
         signOut();
       }
     })();
-  }, []);
+  }, [sdk]);
 
   const onClickTrack = (track: Track) => {
     setSelectedTrack(track);
   };
 
   if (!yourTopTracks) {
-    return null;
+    return <Loader />;
   }
 
   return (
     <div className="flex flex-col space-y-4 relative">
       {selectedTrack && (
         <div className="inline-block fixed md:w-1/3 lg:w-1/4 transition ease-in-out duration-500 bottom-0 right-8 z-50 box-border">
-          <i className="bi bi-x-circle-fill text-gray-300 text-1xl cursor-pointer absolute -right-1 -top-3" onClick={() => setSelectedTrack(undefined)} />
+          <i
+            className="bi bi-x-circle-fill text-gray-300 text-1xl cursor-pointer absolute -right-1 -top-3"
+            onClick={() => setSelectedTrack(undefined)}
+          />
           <iframe
             src={`https://open.spotify.com/embed/track/${selectedTrack.id}?utm_source=generator`}
             width="100%"
@@ -146,19 +130,19 @@ const TopTracks = ({ sdk }: { sdk: SpotifyApi }) => {
           ></iframe>
         </div>
       )}
-      {/* <audio
-        src={selectedTrack?.preview_url as string}
-        autoPlay={!!selectedTrack}
-      ></audio> */}
-      <h2 className="text-2xl font-bold">Your Top Tracks</h2>
+      <h2 className="text-2xl font-bold mb-2">Your Top Tracks</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6">
         {map(yourTopTracks.items, (track) => (
           <div className="flex flex-col space-y-2" key={track.id}>
             <div className="relative">
-              <img
+              <Image
                 src={track.album.images[0].url}
                 alt=""
                 className="rounded-md"
+                width={200}
+                height={200}
+                quality={100}
+                loading="lazy"
               />
               <div
                 className={`h-full w-full absolute top-0 left-0 flex justify-center items-center ${
@@ -173,13 +157,16 @@ const TopTracks = ({ sdk }: { sdk: SpotifyApi }) => {
                 )}
               </div>
             </div>
-
-            <h3 className="text-lg font-bold cursor-pointer hover:underline">
-              {track.name}
-            </h3>
-            <p className="text-gray-500 cursor-pointer hover:underline">
-              {track.artists[0].name}
-            </p>
+            <Link href={`/tracks/${track.id}`}>
+              <h3 className="text-lg font-bold cursor-pointer hover:underline">
+                {track.name}
+              </h3>
+            </Link>
+            <Link href={`/artists/${track.artists[0].id}`}>
+              <p className="text-gray-500 cursor-pointer hover:underline">
+                {track.artists[0].name}
+              </p>
+            </Link>
           </div>
         ))}
       </div>

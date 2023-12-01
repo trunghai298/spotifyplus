@@ -18,7 +18,7 @@ export type AuthUser = {
 const authOptions: AuthOptions = {
   providers: [spotifyProfile],
   session: {
-    maxAge: 60 * 60, // 1hr
+    maxAge: 120 * 60, // 1hr
   },
   callbacks: {
     async jwt({ token, account }: { token: JWT; account: Account | null }) {
@@ -60,7 +60,7 @@ const authOptions: AuthOptions = {
     },
   },
   debug: process.env.NODE_ENV === "development",
-  secret: process.env.NEXTAUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET || "secret",
 };
 
 export default authOptions;
