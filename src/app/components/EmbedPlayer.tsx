@@ -19,7 +19,6 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
       <iframe
         src={`https://open.spotify.com/embed/track/${track?.id}?utm_source=generator`}
         width="100%"
-        height="150"
         marginWidth={100}
         frameBorder="0"
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"

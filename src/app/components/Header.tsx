@@ -1,4 +1,5 @@
 "use client";
+import { signOut } from "next-auth/react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -30,6 +31,7 @@ export const Header = ({ session }: any) => {
         <h2 className="text-md hidden sm:inline md:inline font-bold text-gray-900">
           {session.user.name}
         </h2>
+        <button onClick={() => signOut()}>Sign out</button>
       </div>
     </div>
   );
