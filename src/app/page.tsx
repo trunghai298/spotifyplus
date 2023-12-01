@@ -53,7 +53,7 @@ const WelcomeSection = ({ sdk }: { sdk: SpotifyApi }) => {
       <div className="container px-4 md:px-6">
         <div className="flex flex-col items-center space-y-4 text-center">
           <div className="">
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
+            <h1 className="text-3xl text-white font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
               Personalized Insights from Spotify
             </h1>
             <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl py-4 dark:text-gray-400">
@@ -70,7 +70,7 @@ const WelcomeSection = ({ sdk }: { sdk: SpotifyApi }) => {
                 onChange={(e) => onInputChange(e)}
               />
               <button
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+                className="inline-flex items-center justify-center rounded-md text-sm text-white font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
                 type="submit"
                 onClick={search}
               >
@@ -130,7 +130,7 @@ const TopTracks = ({ sdk }: { sdk: SpotifyApi }) => {
           ></iframe>
         </div>
       )}
-      <h2 className="text-2xl font-bold mb-2">Your Top Tracks</h2>
+      <h2 className="text-2xl text-white font-bold mb-2">Your Top Tracks</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6">
         {map(yourTopTracks.items, (track) => (
           <div className="flex flex-col space-y-2" key={track.id}>

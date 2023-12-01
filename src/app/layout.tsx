@@ -20,7 +20,7 @@ export default async function RootLayout({
       <div className="sticky top-0 w-full px-10 bg-gray-900 z-max h-24 flex justify-between items-center">
         <div className="flex gap-x-1 items-center">
           <i className="bi bi-spotify"></i>
-          <h2 className="text-2xl font-bold">Spotify Plus</h2>
+          <h2 className="text-2xl font-bold text-white">Spotify Plus</h2>
         </div>
         <div className="flex items-center justify-between gap-x-1 bg-gray-300 px-4 py-1 rounded-xl">
           <Image
