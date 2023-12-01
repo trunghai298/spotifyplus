@@ -39,12 +39,20 @@ function ArtistPage() {
     })();
   }, []);
 
+  useEffect(() => {
+    (async () => {
+      const id = window.location.pathname.split("/")[2];
+      const data = await sdk.artists.relatedArtists(id);
+      console.log(data);
+    })();
+  }, []);
+
   if (!artist || !albums) {
     return <Loader />;
   }
 
   return (
-    <div className="h-full bg-gray-900 px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8 lg:px-24 lg:py-10">
+    <div className="h-full min-h-screen bg-gray-900 px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8 lg:px-24 lg:py-10">
       <div className="w-full flex flex-col gap-x-6 md:flex-row">
         <div className="min-w-[300px] flex flex-col justify-start items-center">
           <Image
@@ -55,7 +63,12 @@ function ArtistPage() {
             className="max-h-[200px] sm:max-h-[300px] md:max-h-[400px] w-full object-cover object-center rounded-lg shadow-md"
           />
           <div className="w-full py-4">
-            <h1 className="text-4xl font-bold text-white">{artist.name}</h1>
+            <h1 className="text-4xl font-bold text-white flex">
+              {artist.name}
+              <span className="ml-2 flex items-start">
+                <i className="bi bi-patch-check-fill text-lg"></i>
+              </span>
+            </h1>
             <p className="text-white text-md font-medium">
               {artist.followers.total} Followers
             </p>

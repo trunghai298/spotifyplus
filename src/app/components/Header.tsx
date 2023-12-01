@@ -9,7 +9,7 @@ export const Header = ({ session }: any) => {
 
   if (!session) return null;
   return (
-    <div className="sticky top-0 w-full p-2 sm:px-10 bg-gray-900 z-max h-24 flex justify-between items-center">
+    <div className="sticky -top-[1px] w-full p-2 sm:px-10 bg-gray-900 z-max h-24 flex justify-between items-center">
       <div className="flex gap-x-1 items-center">
         <i className="bi bi-spotify"></i>
         <a
