@@ -11,6 +11,7 @@ import Image from "next/image";
 import { Loader } from "@/app/components/Loader";
 import { useAppDispatch } from "@/app/lib/redux/hooks";
 import { setTrack } from "@/app/lib/redux/slices";
+import Container from "@/app/components/Container";
 
 function ArtistPage() {
   const [artist, setArtist] = useState<Artist>();
@@ -52,7 +53,7 @@ function ArtistPage() {
   }
 
   return (
-    <div className="h-full min-h-screen bg-gray-900 px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8 lg:px-24 lg:py-10">
+    <Container>
       <div className="w-full flex flex-col gap-x-6 md:flex-row">
         <div className="min-w-[300px] flex flex-col justify-start items-center">
           <Image
@@ -97,7 +98,7 @@ function ArtistPage() {
               {topTracks?.tracks.map((track, index) => (
                 <tr key={track.id} className="h-auto sm:h-[30px] md:h-[50px]">
                   <td className="text-white">
-                    <h2 className="text-gray-400">{index}</h2>
+                    <h2 className="text-gray-400">{index + 1}</h2>
                   </td>
                   <td className="flex items-center w-full h-full min-h-[40px] max-w-[300px] gap-x-2 text-white hover:underline hover:cursor-pointer overflow-ellipsis">
                     <Image
@@ -140,7 +141,7 @@ function ArtistPage() {
           ))}
         </div>
       </div>
-    </div>
+    </Container>
   );
 }
 

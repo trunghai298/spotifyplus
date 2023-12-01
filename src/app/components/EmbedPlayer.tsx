@@ -1,5 +1,4 @@
 "use client";
-import { Track } from "@spotify/web-api-ts-sdk";
 import React, { FC, HTMLAttributes } from "react";
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { setTrack } from "../lib/redux/slices";

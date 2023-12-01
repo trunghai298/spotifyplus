@@ -32,6 +32,7 @@ const config: Config = {
         "spotify-gray-lightest": "#F5F5F5",
         "min-blue":
           "linear-gradient(90deg, #417B94 3.82%, rgba(74, 163, 199, 0.71) 95.66%)",
+        "shadow-gray": "rgba(0, 0, 0, 0.2) 0px 4px 12px 0px",
       },
       fontSize: {
         "400px": "400px",
