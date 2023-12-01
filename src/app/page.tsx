@@ -9,6 +9,9 @@ import { map } from "lodash";
 import Link from "next/link";
 import Image from "next/image";
 import { Loader } from "./components/Loader";
+import { setTrack } from "./lib/redux/slices";
+import { useAppDispatch, useAppSelector } from "./lib/redux/hooks";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const session = useSession();
@@ -31,7 +34,6 @@ export default function Home() {
     <div className="h-full bg-gray-900 px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8 lg:px-24 lg:py-10">
       <WelcomeSection sdk={sdk} />
       <TopTracks sdk={sdk} />
-      {/* <SpotifySearch sdk={sdk} /> */}
     </div>
   );
 }
@@ -86,7 +88,9 @@ const WelcomeSection = ({ sdk }: { sdk: SpotifyApi }) => {
 
 const TopTracks = ({ sdk }: { sdk: SpotifyApi }) => {
   const [yourTopTracks, setYourTopTracks] = useState<Page<Track>>();
-  const [selectedTrack, setSelectedTrack] = useState<Track>();
+  const dispatch = useAppDispatch();
+  const { track: selectedTrack } = useAppSelector((state) => state.player);
+  const router = useRouter();
 
   useEffect(() => {
     (async () => {
@@ -94,7 +98,7 @@ const TopTracks = ({ sdk }: { sdk: SpotifyApi }) => {
         const results = await sdk.currentUser.topItems(
           "tracks",
           "long_term",
-          30
+          15
         );
         setYourTopTracks(results);
       } catch (error: any) {
@@ -104,7 +108,7 @@ const TopTracks = ({ sdk }: { sdk: SpotifyApi }) => {
   }, [sdk]);
 
   const onClickTrack = (track: Track) => {
-    setSelectedTrack(track);
+    dispatch(setTrack(track));
   };
 
   if (!yourTopTracks) {
@@ -113,23 +117,7 @@ const TopTracks = ({ sdk }: { sdk: SpotifyApi }) => {
 
   return (
     <div className="flex flex-col space-y-4 relative">
-      {selectedTrack && (
-        <div className="inline-block fixed md:w-1/3 lg:w-1/4 transition ease-in-out duration-500 bottom-0 right-8 z-50 box-border">
-          <i
-            className="bi bi-x-circle-fill text-gray-300 text-1xl cursor-pointer absolute -right-1 -top-3"
-            onClick={() => setSelectedTrack(undefined)}
-          />
-          <iframe
-            src={`https://open.spotify.com/embed/track/${selectedTrack.id}?utm_source=generator`}
-            width="100%"
-            height="150"
-            marginWidth={100}
-            frameBorder="0"
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"
-          ></iframe>
-        </div>
-      )}
+      {/* <EmbedPlayer track={selectedTrack} setTrack={setTrack} /> */}
       <h2 className="text-2xl text-white font-bold mb-2">Your Top Tracks</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6">
         {map(yourTopTracks.items, (track) => (
@@ -157,16 +145,18 @@ const TopTracks = ({ sdk }: { sdk: SpotifyApi }) => {
                 )}
               </div>
             </div>
-            <Link href={`/tracks/${track.id}`}>
-              <h3 className="text-lg font-bold cursor-pointer hover:underline">
-                {track.name}
-              </h3>
-            </Link>
-            <Link href={`/artists/${track.artists[0].id}`}>
-              <p className="text-gray-500 cursor-pointer hover:underline">
-                {track.artists[0].name}
-              </p>
-            </Link>
+            <h3
+              className="text-lg font-bold cursor-pointer hover:underline"
+              onClick={() => onClickTrack(track)}
+            >
+              {track.name}
+            </h3>
+            <p
+              className="text-gray-500 cursor-pointer hover:underline"
+              onClick={() => router.push(`/artists/${track.artists[0].id}`)}
+            >
+              {track.artists[0].name}
+            </p>
           </div>
         ))}
       </div>
