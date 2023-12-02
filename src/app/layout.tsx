@@ -6,6 +6,7 @@ import AuthSessionProvider from "./components/AuthSessionProvider";
 import { Header } from "./components/Header";
 import { EmbedPlayer } from "./components/EmbedPlayer";
 import { Providers } from "./lib/redux/providers";
+import "bootstrap-icons/font/bootstrap-icons.css";
 
 const inter = Inter({ subsets: ["latin"] });
 

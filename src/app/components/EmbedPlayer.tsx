@@ -1,11 +1,17 @@
 "use client";
-import React, { FC, HTMLAttributes } from "react";
+import React, { FC, HTMLAttributes, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import { setTrack } from "../lib/redux/slices";
 
 export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const dispatch = useAppDispatch();
   const { track } = useAppSelector((state) => state.player);
+
+  useEffect(() => {
+    if (track) {
+      document.title = track.name + "-" + track.artists[0].name;
+    }
+  }, [track]);
 
   if (!track) return null;
 
