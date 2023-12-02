@@ -10,16 +10,27 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (track) {
-      document.title = track.name + "-" + track.artists[0].name;
-    }
-  }, [track]);
-
-  useEffect(() => {
     let x = 0;
     let y = 0;
     const ele = ref.current;
     if (!ele || !track) return;
+    document.title = track.name + "-" + track.artists[0].name;
+    setTimeout(() => {
+      const iframe: HTMLIFrameElement | null = document.querySelector(
+        'iframe[src*="open.spotify.com/embed/track"]'
+      );
+      console.log(iframe);
+      if (iframe) {
+        const playButton: HTMLButtonElement | null | undefined =
+          iframe?.contentWindow?.document.body.querySelector(
+            '[data-testid="play-pause-button]'
+          );
+        if (playButton) {
+          playButton.click();
+        }
+      }
+    }, 1000);
+
     const mouseDownHandler = function (e: any) {
       x = e.clientX;
       y = e.clientY;
@@ -68,7 +79,6 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
       <iframe
         src={`https://open.spotify.com/embed/track/${track?.id}?utm_source=generator`}
         width="100%"
-        marginWidth={100}
         frameBorder="0"
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
         loading="lazy"
