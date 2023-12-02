@@ -45,6 +45,11 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
     };
 
     ele.addEventListener("mousedown", mouseDownHandler);
+
+    return () => {
+      ele.removeEventListener("mousedown", mouseDownHandler);
+      ele.removeEventListener("mousemove", mouseMoveHandler);
+    };
   }, [track]);
 
   if (!track) return null;
