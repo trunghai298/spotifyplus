@@ -27,7 +27,7 @@ type SongRecommendation = {
   };
 };
 
-function SongLikeX() {
+function SongSymmetry() {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [searchResult, setSearchResult] = useState<Track[]>();
   const [songRecommendation, setSongRecommendation] =
@@ -185,7 +185,7 @@ function SongLikeX() {
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        router.replace(`/songlikex?trackId=${track.id}`);
+                        router.replace(`/songsymmetry?trackId=${track.id}`);
                       }}
                     />
                   </Tooltip>
@@ -204,9 +204,11 @@ function SongLikeX() {
       <>
         <div className="flex flex-col items-center justify-center w-full h-full">
           <div className="w-full flex flex-col space-y-2 justify-center items-center">
-            <h1 className="text-4xl font-bold text-white flex">Song Like X</h1>
-            <h2 className="text-xl font-normal text-white flex">
-              Find songs like your favorite song
+            <h1 className="text-4xl font-bold text-white flex">
+              Song Symmetry
+            </h1>
+            <h2 className="text-lg font-light text-gray-300 flex">
+              Find Songs in the Same Vibes
             </h2>
           </div>
         </div>
@@ -251,7 +253,7 @@ function SongLikeX() {
       </>
     );
   };
-  console.log("songRecommendation", songRecommendation);
+
   return (
     <Container>
       <div className="mt-12 flex flex-col space-y-6 items-center justify-center w-full h-full">
@@ -261,4 +263,4 @@ function SongLikeX() {
   );
 }
 
-export default SongLikeX;
+export default SongSymmetry;
