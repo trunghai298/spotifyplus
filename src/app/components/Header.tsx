@@ -12,7 +12,7 @@ export const Header = ({ session }: any) => {
   if (!session) return null;
   return (
     <header className="sticky -top-[1px] w-full p-2 sm:px-10 bg-gray-900 z-max flex justify-between items-center">
-      <nav className="flex flex-wrap w-full items-center justify-between space-x-4">
+      <nav className="flex flex-wrap w-full items-center justify-between sm:space-x-4">
         <div className="flex gap-x-1 items-center">
           <i className="bi bi-spotify"></i>
           <a
@@ -39,7 +39,7 @@ export const Header = ({ session }: any) => {
           } w-full sm:flex sm:items-center sm:w-auto`}
           id="menu"
         >
-          <ul className="pt-4 text-base text-gray-700 flex flex-col sm:flex-row m-0 justify-between items-center space-x-4 md:pt-0">
+          <ul className="pt-4 text-base text-gray-700 flex flex-col sm:flex-row m-0 justify-between items-center space-y-2 sm:space-x-4 md:pt-0">
             <a
               className="text-lg font-medium text-zinc-900 hover:text-zinc-700 dark:text-zinc-50 dark:hover:text-zinc-300 cursor-pointer"
               onClick={() => router.push("/songlikex")}
@@ -107,7 +107,10 @@ export const Header = ({ session }: any) => {
                       <a
                         className="text-sm text-gray-500 bg-white hover:bg-gray-200 rounded-md py-1 px-2 block whitespace-no-wrap"
                         href="#"
-                        onClick={() => signOut()}
+                        onClick={() => {
+                          router.push("/");
+                          signOut();
+                        }}
                       >
                         Sign out
                       </a>

@@ -54,7 +54,7 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
     <div
       ref={ref}
       id="player"
-      className="select-none fixed md:w-1/3 lg:w-1/4 transition ease-in-out duration-500 bottom-0 right-8 z-50 box-border"
+      className="select-none fixed h-[80px] md:w-1/3 lg:w-1/4 transition ease-in-out duration-500 bottom-0 right-8 z-50 box-border"
     >
       <i className="opacity-0 hover:opacity-100 select-none bi bi-arrows-move text-gray-300 text-1xl cursor-pointer absolute right-6 -top-7" />
       <i
@@ -64,6 +64,7 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
       <iframe
         src={`https://open.spotify.com/embed/track/${track?.id}?utm_source=generator`}
         width="100%"
+        height={80}
         frameBorder="0"
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
         loading="lazy"

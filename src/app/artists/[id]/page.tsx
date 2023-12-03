@@ -13,6 +13,7 @@ import { useAppDispatch } from "@/app/lib/redux/hooks";
 import { setTrack } from "@/app/lib/redux/slices/playerSlices";
 import Container from "@/app/components/Container";
 import { useRouter } from "next/navigation";
+import { millisToMinutesAndSeconds } from "@/utils";
 
 function ArtistPage() {
   const [artist, setArtist] = useState<Artist>();
@@ -22,14 +23,9 @@ function ArtistPage() {
   const dispatch = useAppDispatch();
   const router = useRouter();
 
-  const millisToMinutesAndSeconds = (millis: number) => {
-    const minutes = Math.floor(millis / 60000);
-    const seconds: any = ((millis % 60000) / 1000).toFixed(0);
-    return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-  };
-
   useEffect(() => {
     (async () => {
+      window.scrollTo(0, 0);
       const id = window.location.pathname.split("/")[2];
       const [artist, albums, topTracks] = await Promise.all([
         sdk.artists.get(id),
@@ -77,14 +73,14 @@ function ArtistPage() {
                 <th className="text-left text-gray-400 min-w-[30px] sm:min-w-[50px] text-sm">
                   #
                 </th>
-                <th className="text-left text-gray-400 min-w-[100px] sm:min-w-[150px] md:min-w-[200px] lg:min-w-[250px] xl:min-w-[400px] text-sm">
+                <th className="text-left text-gray-400 min-w-[150px] sm:min-w-[200px] md:min-w-[250px] lg:min-w-[300px] xl:min-w-[400px] text-sm">
                   Title
                 </th>
                 <th className="text-left text-gray-400 min-w-[100px] sm:min-w-[150px] md:min-w-[200px] lg:min-w-[250px] xl:min-w-[400px] text-sm">
                   Album
                 </th>
                 <th className="text-left">
-                  <i className="bi bi-clock text-white w-[10px] h-[10px]" />
+                  <i className="bi bi-clock text-white hidden md:inline w-[10px] h-[10px]" />
                 </th>
               </tr>
             </thead>
@@ -106,8 +102,15 @@ function ArtistPage() {
                       {track.name}
                     </h2>
                   </td>
-                  <td className="text-gray-400">{track.album.name}</td>
-                  <td className="text-gray-400">
+                  <td
+                    className="text-gray-400 cursor-pointer hover:underline"
+                    onClick={() =>
+                      router.push(`/tracks?type=album&id=${track.album.id}`)
+                    }
+                  >
+                    {track.album.name}
+                  </td>
+                  <td className="text-gray-400 hidden md:inline">
                     {millisToMinutesAndSeconds(track.duration_ms)}
                   </td>
                 </tr>

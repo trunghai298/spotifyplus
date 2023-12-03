@@ -16,7 +16,7 @@ function Receiptify() {
     <Container>
       <div className="w-full h-full flex flex-col justify-center items-center">
         {/**display a grid contain 3 style of receipt */}
-        <div className="w-full h-full flex flex-col sm:flex-row justify-between mt-12 gap-12">
+        <div className="w-full h-full flex flex-col sm:flex-row justify-between mt-12">
           <div className="w-full h-full max-w-full sm:max-w-[70%] flex flex-col items-start">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-50">
               Choose a style that you like

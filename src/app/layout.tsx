@@ -20,7 +20,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <AuthSessionProvider session={session}>
-        <body className={inter.className}>
+        <body className={`${inter.className} h-full min-h-screen bg-gray-900`}>
           <Providers>
             <EmbedPlayer />
             <Header session={session} />

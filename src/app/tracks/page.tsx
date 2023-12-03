@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
 import {
   Album,
+  Playlist,
   PlaylistedTrack,
   SimplifiedTrack,
   Track,
@@ -11,42 +12,42 @@ import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import sdk from "../lib/spotify-sdk/ClientInstance";
 import { setTrack } from "../lib/redux/slices/playerSlices";
-import { map } from "lodash";
+import { map, startCase, sumBy } from "lodash";
 import Image from "next/image";
 import { Loader } from "../components/Loader";
 import Container from "../components/Container";
+import { millisToMinAndSecs } from "@/utils";
 
 type AlbumTracks = {
   type: "album";
-  tracks: SimplifiedTrack[];
-  images: Album["images"];
+  album: Album;
 };
 type PlaylistedTracks = {
   type: "playlist";
-  tracks: PlaylistedTrack[];
+  playlist: Playlist;
 };
 
 type Tracks = PlaylistedTracks | AlbumTracks | undefined;
 
 function TopTracks() {
-  const [tracks, setTracks] = useState<Tracks | undefined>();
+  const [tracksData, setTracksData] = useState<Tracks | undefined>();
   const dispatch = useAppDispatch();
   const router = useRouter();
 
   useEffect(() => {
     (async () => {
+      window.scrollTo(0, 0);
       const searchParams = new URLSearchParams(window.location.search);
       const type = searchParams.get("type");
       const id = searchParams.get("id");
       if (!type || !id) return;
       try {
-        let results;
         if (type === "playlist") {
-          results = (await sdk.playlists.getPlaylistItems(id)).items;
-          setTracks({ type, tracks: results });
+          const playlist = await sdk.playlists.getPlaylist(id);
+          setTracksData({ type, playlist });
         } else if (type === "album") {
           const album = await sdk.albums.get(id);
-          setTracks({ type, tracks: album.tracks.items, images: album.images });
+          setTracksData({ type, album });
         }
       } catch (error: any) {
         signOut();
@@ -58,33 +59,69 @@ function TopTracks() {
     dispatch(setTrack(track as Track));
   };
 
-  if (!tracks) {
+  if (!tracksData) {
     return <Loader />;
   }
 
-  const renderAlbumTracks = (tracks: AlbumTracks) => {
+  const renderAlbumTracks = (album: Album) => {
     return (
       <div className="flex flex-col space-y-4 relative">
         <div className="flex flex-col gap-6">
-          <div className="flex flex-col justify-center space-y-6">
-            <Image
-              src={tracks.images[0].url}
-              alt=""
-              className="rounded-md w-full aspect-auto md:aspect-video object-cover"
-              width={500}
-              height={500}
-              quality={100}
-              loading="lazy"
-            />
-            <div className="flex flex-col space-y-2">
-              {map(tracks.tracks, (track) => (
-                <div className="flex flex-col space-y-2" key={track.id}>
+          <div className="flex flex-col justify-center space-y-8">
+            <div className="flex flex-col sm:flex-row space-y-3 sm:space-x-4">
+              <Image
+                src={album.images[0].url}
+                alt=""
+                className="rounded-md aspect-video sm:aspect-square sm:max-w-[200px] sm:max-h-[200px] object-cover object-top"
+                width={500}
+                height={100}
+                quality={100}
+                loading="lazy"
+              />
+              <div className="flex flex-col space-y-2 items-start justify-end">
+                <h4 className="text-white text-sm font-medium">
+                  {startCase(album.album_type)}
+                </h4>
+                <h2 className="text-white text-4xl font-bold cursor-pointer hover:underline">
+                  {album.name}
+                </h2>
+                <div className="flex items-center justify-between space-x-4">
                   <h3
-                    className="text-lg font-bold cursor-pointer hover:underline"
-                    onClick={() => onClickTrack(track)}
+                    className="text-white text-xs sm:text-sm md:text-md font-medium cursor-pointer hover:underline"
+                    onClick={() =>
+                      router.push(`/artists/${album.artists[0].id}`)
+                    }
                   >
-                    {track.name}
+                    {album.artists[0].name}
                   </h3>
+                  <h3 className="text-gray-400 text-xs sm:text-sm md:text-md font-normal">
+                    {album.release_date}
+                  </h3>
+                  <h3 className="text-gray-400 text-xs sm:text-sm md:text-md font-normal">
+                    {album.total_tracks} songs
+                  </h3>
+                  <h3 className="text-gray-400 text-xs sm:text-sm md:text-md font-normal">
+                    {millisToMinAndSecs(
+                      sumBy(album.tracks.items, (track) => track.duration_ms)
+                    )}
+                  </h3>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-col space-y-2">
+              {map(album.tracks.items, (track) => (
+                <div className="flex flex-col space-y-2" key={track.id}>
+                  <div className="flex items-center space-x-2">
+                    <h3 className="text-gray-400 text-sm font-normal">
+                      {track.track_number}.
+                    </h3>
+                    <h3
+                      className="text-lg font-bold cursor-pointer hover:underline"
+                      onClick={() => onClickTrack(track)}
+                    >
+                      {track.name}
+                    </h3>
+                  </div>
                   <div className="flex items-center justify-between">
                     <p
                       className="text-gray-500 cursor-pointer hover:underline"
@@ -108,13 +145,51 @@ function TopTracks() {
     );
   };
 
-  const renderPlaylistTracks = (tracks: PlaylistedTracks) => {
+  const renderPlaylistTracks = (playlist: Playlist) => {
     return (
       <div className="flex flex-col space-y-4 relative">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col justify-center space-y-6">
+            <div className="flex flex-col sm:flex-row space-y-3 sm:space-x-4">
+              <Image
+                src={playlist.images[0].url}
+                alt=""
+                className="rounded-md aspect-video sm:aspect-square sm:max-w-[200px] sm:max-h-[200px] object-cover object-top"
+                width={500}
+                height={100}
+                quality={100}
+                loading="lazy"
+              />
+              <div className="flex flex-col space-y-2 items-start justify-end">
+                <h4 className="text-white text-sm font-medium">
+                  {startCase(playlist.type)}
+                </h4>
+                <h2 className="text-white text-4xl font-bold cursor-pointer hover:underline">
+                  {playlist.name}
+                </h2>
+                <div className="flex items-center justify-between space-x-4">
+                  <h3
+                    className="text-white text-xs sm:text-sm md:text-md font-medium cursor-pointer hover:underline"
+                    onClick={() => router.push(`/artists/${playlist.owner.id}`)}
+                  >
+                    {playlist.owner.display_name}
+                  </h3>
+                  <h3 className="text-gray-400 text-xs sm:text-sm md:text-md font-normal">
+                    {playlist.tracks.items.length} songs
+                  </h3>
+                  <h3 className="text-gray-400 text-xs sm:text-sm md:text-md font-normal">
+                    {millisToMinAndSecs(
+                      sumBy(
+                        playlist.tracks.items,
+                        (track) => track.track.duration_ms
+                      )
+                    )}
+                  </h3>
+                </div>
+              </div>
+            </div>
             <div className="flex flex-col space-y-2">
-              {map(tracks.tracks, (track: { track: Track }) => (
+              {map(playlist.tracks.items, (track: { track: Track }) => (
                 <div
                   className="flex flex-row space-x-4 items-center justify-start"
                   key={track.track.id}
@@ -139,9 +214,11 @@ function TopTracks() {
                     </h3>
                     <p
                       className="text-gray-500 cursor-pointer hover:underline"
-                      onClick={() => router.push(`/artists/${track.track.id}`)}
+                      onClick={() =>
+                        router.push(`/artists/${track.track.artists[0].id}`)
+                      }
                     >
-                      {track.track.name}
+                      {track.track.artists[0].name}
                     </p>
                   </div>
                 </div>
@@ -155,9 +232,9 @@ function TopTracks() {
 
   return (
     <Container>
-      {tracks.type === "album"
-        ? renderAlbumTracks(tracks)
-        : renderPlaylistTracks(tracks)}
+      {tracksData.type === "album"
+        ? renderAlbumTracks(tracksData.album)
+        : renderPlaylistTracks(tracksData.playlist)}
     </Container>
   );
 }
