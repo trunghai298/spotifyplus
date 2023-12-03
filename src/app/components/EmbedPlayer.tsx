@@ -1,7 +1,7 @@
 "use client";
 import React, { FC, HTMLAttributes, useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
-import { setTrack } from "../lib/redux/slices";
+import { setTrack } from "../lib/redux/slices/playerSlices";
 
 export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const dispatch = useAppDispatch();
@@ -15,21 +15,6 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
     const ele = ref.current;
     if (!ele || !track) return;
     document.title = track.name + "-" + track.artists[0].name;
-    setTimeout(() => {
-      const iframe: HTMLIFrameElement | null = document.querySelector(
-        'iframe[src*="open.spotify.com/embed/track"]'
-      );
-      console.log(iframe);
-      if (iframe) {
-        const playButton: HTMLButtonElement | null | undefined =
-          iframe?.contentWindow?.document.body.querySelector(
-            '[data-testid="play-pause-button]'
-          );
-        if (playButton) {
-          playButton.click();
-        }
-      }
-    }, 1000);
 
     const mouseDownHandler = function (e: any) {
       x = e.clientX;

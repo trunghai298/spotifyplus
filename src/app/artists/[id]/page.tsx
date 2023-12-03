@@ -10,8 +10,9 @@ import sdk from "../../lib/spotify-sdk/ClientInstance";
 import Image from "next/image";
 import { Loader } from "@/app/components/Loader";
 import { useAppDispatch } from "@/app/lib/redux/hooks";
-import { setTrack } from "@/app/lib/redux/slices";
+import { setTrack } from "@/app/lib/redux/slices/playerSlices";
 import Container from "@/app/components/Container";
+import { useRouter } from "next/navigation";
 
 function ArtistPage() {
   const [artist, setArtist] = useState<Artist>();
@@ -19,6 +20,7 @@ function ArtistPage() {
   const [topTracks, setTracks] = useState<TopTracksResult>();
 
   const dispatch = useAppDispatch();
+  const router = useRouter();
 
   const millisToMinutesAndSeconds = (millis: number) => {
     const minutes = Math.floor(millis / 60000);
@@ -37,14 +39,6 @@ function ArtistPage() {
       setTracks(topTracks);
       setAlbums(albums);
       setArtist(artist);
-    })();
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const id = window.location.pathname.split("/")[2];
-      const data = await sdk.artists.relatedArtists(id);
-      console.log(data);
     })();
   }, []);
 
@@ -126,7 +120,11 @@ function ArtistPage() {
         <h1 className="text-2xl font-bold text-white mb-4">Albums</h1>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-8">
           {albums.items.map((album) => (
-            <div key={album.id} className="flex flex-col w-fit">
+            <div
+              key={album.id}
+              className="flex flex-col w-fit"
+              onClick={() => router.push(`/tracks?type=album&id=${album.id}`)}
+            >
               <Image
                 src={album.images[0].url}
                 alt=""

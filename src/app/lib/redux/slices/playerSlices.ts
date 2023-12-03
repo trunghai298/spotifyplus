@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { AppDispatch } from "./store";
-import { Track } from "@spotify/web-api-ts-sdk";
+import { AppDispatch } from "../store";
+import { Playlist, Track } from "@spotify/web-api-ts-sdk";
 
 interface IPlayer {
   track: Track | undefined;
