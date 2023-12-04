@@ -36,6 +36,11 @@ const config: Config = {
       },
       fontSize: {
         "400px": "400px",
+        "5xl": "2.5rem",
+        "6xl": "3rem",
+      },
+      borderRadius: {
+        "4xl": "2rem",
       },
     },
   },

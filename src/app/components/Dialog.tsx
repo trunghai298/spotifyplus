@@ -1,56 +1,36 @@
 "use client";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
-function Dialog({ children, title, onClose }: any) {
-  const toggleModal = () => {};
+type DialogProps = {
+  open: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+};
+
+function Dialog({ children, open, onClose }: DialogProps) {
+  if (!open) return null;
 
   return (
-    <div
-      className="fixed z-10 overflow-y-auto top-0 w-full left-0 hidden"
-      id="modal"
-    >
-      <div className="flex items-center justify-center min-height-100vh pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div className="fixed inset-0 transition-opacity">
-          <div className="absolute inset-0 bg-gray-900 opacity-75" />
-        </div>
-        <span className="hidden sm:inline-block sm:align-middle sm:h-screen">
-          &#8203;
-        </span>
-        <div
-          className="inline-block align-center bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="modal-headline"
-        >
-          <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <label className="font-medium text-gray-800">Name</label>
-            <input
-              type="text"
-              className="w-full outline-none rounded bg-gray-100 p-2 mt-2 mb-3"
-            />
-            <label className="font-medium text-gray-800">Url</label>
-            <input
-              type="text"
-              className="w-full outline-none rounded bg-gray-100 p-2 mt-2 mb-3"
-            />
-          </div>
-          <div className="bg-gray-200 px-4 py-3 text-right">
-            <button
-              type="button"
-              className="py-2 px-4 bg-gray-500 text-white rounded hover:bg-gray-700 mr-2"
-              onClick={toggleModal}
-            >
-              <i className="fas fa-times"></i> Cancel
-            </button>
-            <button
-              type="button"
-              className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-700 mr-2"
-            >
-              <i className="fas fa-plus"></i> Create
-            </button>
-          </div>
+    <>
+      <div
+        className="fixed inset-0 bg-black opacity-50 z-max"
+        onClick={onClose}
+      />
+      <div
+        role="dialog"
+        className="fixed min-w-[300px] max-h-[500px] sm:min-h-[400px] sm:min-w-[600px] bg-purple-950 rounded-3xl sm:rounded-4xl p-8 sm:p-12 overflow-hidden shadow-xl transform top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all z-max"
+        tabIndex={-1}
+      >
+        <div className="flex items-center justify-center min-height-100vh text-center sm:block">
+          <i
+            className="bi bi-x text-4xl text-white absolute top-4 right-4 cursor-pointer hover:text-gray-300 transition-colors"
+            onClick={onClose}
+          />
+          {children}
         </div>
       </div>
-    </div>
+    </>
   );
 }
+
+export default Dialog;

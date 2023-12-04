@@ -6,10 +6,11 @@ import { useRouter } from "next/navigation";
 import sdk from "../lib/spotify-sdk/ClientInstance";
 import Container from "../components/Container";
 import { debounce } from "lodash";
-import { AudioFeatures, Track } from "@spotify/web-api-ts-sdk";
+import { AudioFeatures, Playlist, Track } from "@spotify/web-api-ts-sdk";
 import Image from "next/image";
 import { setTrack } from "../lib/redux/slices/playerSlices";
 import Tooltip from "../components/Tooltip";
+import Dialog from "../components/Dialog";
 
 type SongRecommendation = {
   source: Track;
@@ -31,6 +32,10 @@ function SongSymmetry() {
   const [searchResult, setSearchResult] = useState<Track[]>();
   const [songRecommendation, setSongRecommendation] =
     useState<SongRecommendation>();
+  const [playlist, setPlaylist] = useState<{
+    state: "idle" | "loading" | "success" | "error";
+    playlist?: Playlist;
+  }>({ state: "idle" });
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -43,7 +48,6 @@ function SongSymmetry() {
   const onSearchTrack = async (q: string) => {
     if (q.length > 2) {
       const results = await sdk.search(q, ["track"], undefined, 5);
-      console.log("results", results);
       setSearchResult(results.tracks.items);
     }
   };
@@ -90,6 +94,7 @@ function SongSymmetry() {
 
   const onSavePlaylist = async () => {
     try {
+      setPlaylist({ state: "loading" });
       const user = await sdk.currentUser.profile();
       if (!songRecommendation || !user) return;
       const payload = {
@@ -104,7 +109,9 @@ function SongSymmetry() {
         );
         await sdk.playlists.addItemsToPlaylist(playlist.id, uris);
       }
+      setPlaylist({ state: "success", playlist });
     } catch (error) {
+      setPlaylist({ state: "error" });
       console.log(error);
     }
   };
@@ -170,12 +177,13 @@ function SongSymmetry() {
             </div>
             <div className="w-50 sm:w-100 md:w-100 lg:w-100 flex flex-row justify-end">
               <button
-                className="flex items-center flex-row justify-between space-x-2  bg-spotify-green-dark hover:bg-spotify-green-light py-2 px-4 rounded-3xl"
+                className="flex items-center flex-row justify-between space-x-2  bg-spotify-green-dark hover:bg-spotify-green-light disabled:bg-spotify-green-dark py-2 px-4 rounded-3xl"
                 onClick={onSavePlaylist}
+                disabled={playlist.state === "loading"}
               >
                 <i className="bi bi-spotify text-white text-2xl" />
                 <h3 className="text-white text-sm font-bold uppercase">
-                  Save Playlist
+                  {playlist.state === "loading" ? "Saving..." : "Save Playlist"}
                 </h3>
               </button>
             </div>
@@ -280,8 +288,48 @@ function SongSymmetry() {
     );
   };
 
+  const renderPlaylistDialog = () => {
+    return (
+      <Dialog
+        open={playlist.state === "success"}
+        onClose={() => setPlaylist({ state: "idle" })}
+      >
+        <div className="w-full h-full flex flex-col space-y-4 justify-center items-center">
+          <span className="text-6xl">&#127881;</span>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white flex">
+            Saved to your account
+          </h1>
+          <h2 className="text-md sm:text-lg font-light text-gray-300 text-center w-100 sm:w-90">
+            The playlist is now available in your Spotify library. Also you can
+            find it anytime in Song Symmetry.
+          </h2>
+          <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-x-4 sm:space-y-0">
+            <button
+              onClick={() => {
+                router.push(
+                  `/tracks?type=playlist&id=${playlist.playlist?.id}`
+                );
+              }}
+              className="w-auto min-w-[150px] h-auto text-white text-md sm:text-xl font-extrabold px-1 sm:px-4 py-1 sm:py-2 rounded-full bg-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Open Playlist
+            </button>
+            <button
+              className="w-auto min-w-[150px] h-auto text-white text-md sm:text-xl font-extrabold px-1 sm:px-3 py-1 sm:py-2 rounded-full bg-spotify-green hover:bg-spotify-green/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              onClick={() => setPlaylist({ state: "idle" })}
+            >
+              <i className="bi bi-spotify text-white text-md sm:text-2lg mr-2"></i>
+              Open Spotify
+            </button>
+          </div>
+        </div>
+      </Dialog>
+    );
+  };
+
   return (
     <Container>
+      {renderPlaylistDialog()}
       <div className="mt-12 flex flex-col space-y-6 items-center justify-center w-full h-full">
         {songRecommendation ? renderRecommendation() : renderSearchResult()}
       </div>
