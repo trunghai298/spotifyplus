@@ -1,6 +1,6 @@
 function Container(props: React.PropsWithChildren) {
   return (
-    <div className="h-full px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8 lg:px-24 lg:py-10">
+    <div className="h-full px-4 py-4 sm:px-16 md:px-24 lg:px-32 xl:px-64">
       {props.children}
     </div>
   );

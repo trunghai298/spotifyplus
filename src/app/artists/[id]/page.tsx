@@ -49,9 +49,10 @@ function ArtistPage() {
           <Image
             src={artist.images[0].url}
             alt=""
-            width={200}
-            height={200}
-            className="max-h-[200px] sm:max-h-[300px] md:max-h-[400px] w-full object-cover object-center rounded-lg shadow-md"
+            width={400}
+            height={400}
+            quality={100}
+            className="max-h-[200px] sm:max-h-[250px] md:max-h-[250px] lg:max-h-[300px] w-full aspect-square object-cover object-center rounded-lg shadow-md"
           />
           <div className="w-full py-4">
             <h1 className="text-4xl font-bold text-white flex">

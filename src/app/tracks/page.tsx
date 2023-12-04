@@ -72,17 +72,17 @@ function TopTracks() {
               <Image
                 src={album.images[0].url}
                 alt=""
-                className="rounded-md aspect-video sm:aspect-square sm:max-w-[200px] sm:max-h-[200px] object-cover object-top"
-                width={500}
-                height={100}
+                width={300}
+                height={300}
                 quality={100}
                 loading="lazy"
+                className="max-h-[200px] sm:max-h-[250px] md:max-h-[250px] lg:max-h-[300px] aspect-square object-cover object-center rounded-lg shadow-md"
               />
               <div className="flex flex-col space-y-2 items-start justify-end">
                 <h4 className="text-white text-sm font-medium">
                   {startCase(album.album_type)}
                 </h4>
-                <h2 className="text-white text-4xl font-bold cursor-pointer hover:underline">
+                <h2 className="text-white text-4xl font-extrabold cursor-pointer hover:underline">
                   {album.name}
                 </h2>
                 <div className="flex items-center justify-between space-x-4">

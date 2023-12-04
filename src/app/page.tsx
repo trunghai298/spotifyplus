@@ -7,6 +7,7 @@ import Image from "next/image";
 import BackGround from "../assets/bg.png";
 import TopTracks from "./components/TopTracks";
 import UserPlaylists from "./components/UserPlaylists";
+import Container from "./components/Container";
 
 export default function Home() {
   const session = useSession();
@@ -82,11 +83,11 @@ export default function Home() {
   }
 
   return (
-    <div className="h-full min-h-screen  bg-gray-900 px-4 py-4 sm:px-6 sm:py-6 md:px-8 md:py-8 lg:px-24 lg:py-10">
+    <Container>
       <WelcomeSection sdk={sdk} />
       <TopTracks />
       <UserPlaylists />
-    </div>
+    </Container>
   );
 }
 
