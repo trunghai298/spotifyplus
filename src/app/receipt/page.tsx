@@ -37,7 +37,7 @@ type Receipt = {
   duration: "short_term" | "medium_term" | "long_term";
   length: 10 | 15 | 20;
   background: 1 | 2 | 3 | 4;
-  textColor: string;
+  textColor: string | undefined;
 };
 
 type ReceiptData =
@@ -63,7 +63,7 @@ function Receiptify() {
     duration: "short_term",
     length: 10,
     background: 1,
-    textColor: "#000000",
+    textColor: undefined,
   });
 
   const [data, setData] = useState<ReceiptData>();
@@ -139,7 +139,7 @@ function Receiptify() {
     return (
       <Card
         id="my-receipt"
-        className={`w-full h-full min-h-[600px] flex flex-col justify-start items-center mt-6 bg-white text-[${receipt.textColor}] font-receipt`}
+        className={`w-full h-full min-h-[600px] flex flex-col justify-start items-center mt-6 bg-white text-black font-receipt`}
         style={{
           backgroundImage: `url(${BACKGROUND[receipt.background].src})`,
           backgroundSize: "cover",
