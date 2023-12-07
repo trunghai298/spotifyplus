@@ -10,7 +10,18 @@ import { AudioFeatures, Playlist, Track } from "@spotify/web-api-ts-sdk";
 import Image from "next/image";
 import { setTrack } from "../lib/redux/slices/playerSlices";
 import Tooltip from "../components/Tooltip";
-import Dialog from "../components/Dialog";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+} from "@/components/ui/dialog";
+import {
+  DialogClose,
+  DialogOverlay,
+  DialogTrigger,
+} from "@radix-ui/react-dialog";
 
 type SongRecommendation = {
   source: Track;
@@ -176,7 +187,7 @@ function SongSymmetry() {
               </div>
             </div>
             <div className="w-50 sm:w-100 md:w-100 lg:w-100 flex flex-row justify-end">
-              <button
+              <Button
                 className="flex items-center flex-row justify-between space-x-2  bg-spotify-green-dark hover:bg-spotify-green-light disabled:bg-spotify-green-dark py-2 px-4 rounded-3xl"
                 onClick={onSavePlaylist}
                 disabled={playlist.state === "loading"}
@@ -185,7 +196,7 @@ function SongSymmetry() {
                 <h3 className="text-white text-sm font-bold uppercase">
                   {playlist.state === "loading" ? "Saving..." : "Save Playlist"}
                 </h3>
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -248,7 +259,7 @@ function SongSymmetry() {
         </div>
         <div className="w-full flex flex-col space-y-2 justify-center items-center">
           <input
-            className="flex w-80 sm:w-[600px] h-14 text-gray-900 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex w-80 sm:w-[600px] h-14 text-white rounded-md border border-white border-input bg-background px-3 py-2 text-sm sm:text-md md:text-lg lg:text-xl ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="Type a song name"
             type="text"
             value={searchQuery}
@@ -290,39 +301,41 @@ function SongSymmetry() {
 
   const renderPlaylistDialog = () => {
     return (
-      <Dialog
-        open={playlist.state === "success"}
-        onClose={() => setPlaylist({ state: "idle" })}
-      >
-        <div className="w-full h-full flex flex-col space-y-4 justify-center items-center">
-          <span className="text-6xl">&#127881;</span>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white flex">
-            Saved to your account
-          </h1>
-          <h2 className="text-md sm:text-lg font-light text-gray-300 text-center w-100 sm:w-90">
-            The playlist is now available in your Spotify library. Also you can
-            find it anytime in Song Symmetry.
-          </h2>
-          <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-x-4 sm:space-y-0">
-            <button
-              onClick={() => {
-                router.push(
-                  `/tracks?type=playlist&id=${playlist.playlist?.id}`
-                );
-              }}
-              className="w-auto min-w-[150px] h-auto text-white text-md sm:text-xl font-extrabold px-1 sm:px-4 py-1 sm:py-2 rounded-full bg-gray-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Open Playlist
-            </button>
-            <button
-              className="w-auto min-w-[150px] h-auto text-white text-md sm:text-xl font-extrabold px-1 sm:px-3 py-1 sm:py-2 rounded-full bg-spotify-green hover:bg-spotify-green/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-              onClick={() => setPlaylist({ state: "idle" })}
-            >
-              <i className="bi bi-spotify text-white text-md sm:text-2lg mr-2"></i>
-              Open Spotify
-            </button>
-          </div>
-        </div>
+      <Dialog open={playlist.state === "success"}>
+        <DialogClose onClick={() => setPlaylist({ state: "idle" })}>
+          <DialogContent className="rounded-3xl border-none p-8 bg-purple-950 flex flex-col justify-center text-center items-center">
+            <DialogHeader className="text-center">
+              <span className="text-6xl">&#127881;</span>
+              <h1 className="text-2xl w-full sm:text-3xl md:text-4xl font-bold text-white">
+                Saved to your account
+              </h1>
+              <h2 className="text-md sm:text-lg font-light text-gray-300 w-100 sm:w-90">
+                The playlist is now available in your Spotify library. Also you
+                can find it anytime in Song Symmetry.
+              </h2>{" "}
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                onClick={() => {
+                  router.push(
+                    `/tracks?type=playlist&id=${playlist.playlist?.id}`
+                  );
+                }}
+                className="w-auto min-w-[150px] font-bold"
+                variant="secondary"
+              >
+                Open Playlist
+              </Button>
+              <Button
+                className="w-auto min-w-[150px] px-1 sm:px-3 py-1 sm:py-2 font-extrabold"
+                onClick={() => setPlaylist({ state: "idle" })}
+              >
+                <i className="bi bi-spotify text-white text-md sm:text-2lg mr-2"></i>
+                Open Spotify
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </DialogClose>
       </Dialog>
     );
   };

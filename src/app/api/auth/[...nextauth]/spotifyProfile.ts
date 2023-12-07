@@ -17,10 +17,7 @@ const authURL = new URL("https://accounts.spotify.com/authorize");
 
 const scopes = [
   "user-read-email",
-  "user-read-private",
-  "user-read-playback-state",
   "user-library-read",
-  "user-modify-playback-state",
   "playlist-read-private",
   "playlist-read-collaborative",
   "playlist-modify-public",
@@ -29,9 +26,9 @@ const scopes = [
   "streaming",
   "user-top-read",
   "user-read-recently-played",
-  "user-read-playback-position",
   "user-library-modify",
   "user-library-read",
+  "user-follow-read",
 ];
 
 authURL.searchParams.append("scope", scopes.join(" "));

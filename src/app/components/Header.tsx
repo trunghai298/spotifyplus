@@ -39,27 +39,27 @@ export const Header = ({ session }: any) => {
           } w-full sm:flex sm:items-center sm:w-auto`}
           id="menu"
         >
-          <ul className="pt-4 text-base text-gray-700 flex flex-col sm:flex-row m-0 justify-between items-center space-y-2 sm:space-y-0 sm:space-x-4 md:pt-0">
+          <ul className="pt-4 text-base text-white flex flex-col sm:flex-row m-0 justify-between items-center space-y-2 sm:space-y-0 sm:space-x-4 md:pt-0">
             <a
-              className="text-lg font-medium text-zinc-900 hover:text-zinc-700 dark:text-zinc-50 dark:hover:text-zinc-300 cursor-pointer"
+              className="text-lg font-medium hover:text-spotify-green hover:underline cursor-pointer"
               onClick={() => router.push("/song-symmetry")}
             >
               Song Symmetry
             </a>
             <a
-              className="text-lg font-medium text-zinc-900 hover:text-zinc-700 dark:text-zinc-50 dark:hover:text-zinc-300 cursor-pointer"
+              className="text-lg font-medium hover:text-spotify-green hover:underline cursor-pointer"
               onClick={() => router.push("/wrapped")}
             >
               Wrapped
             </a>
             <a
-              className="text-lg font-medium text-zinc-900 hover:text-zinc-700 dark:text-zinc-50 dark:hover:text-zinc-300 cursor-pointer"
+              className="text-lg font-medium hover:text-spotify-green hover:underline cursor-pointer"
               onClick={() => router.push("/receipt")}
             >
               Receiptify
             </a>
             <a
-              className="text-lg font-medium text-zinc-900 hover:text-zinc-700 dark:text-zinc-50 dark:hover:text-zinc-300 cursor-pointer"
+              className="text-lg font-medium hover:text-spotify-green hover:underline cursor-pointer"
               onClick={() => router.push("/analytics")}
             >
               Analytics

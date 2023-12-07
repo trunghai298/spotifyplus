@@ -8,6 +8,7 @@ import BackGround from "../assets/bg.png";
 import TopTracks from "./components/TopTracks";
 import UserPlaylists from "./components/UserPlaylists";
 import Container from "./components/Container";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   const session = useSession();
@@ -59,13 +60,13 @@ export default function Home() {
                 "Explore your personalized Spotify journey with unique insights tailored just for you. Discover your music habits, top genres, and favorite artists in a whole new way."
               }
             </h3>
-            <button
+            <Button
               className="w-auto min-w-[300px] h-auto mt-10 text-white text-xl sm:text-3xl font-bold px-4 sm:px-6 md:px-8 lg:px-10 py-2 sm:py-3 md:py-4 rounded-full bg-spotify-green hover:bg-spotify-green/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               onClick={() => signIn("spotify")}
             >
               <i className="bi bi-spotify text-lg sm:text-4xl mr-4"></i>
               Sign in with Spotify
-            </button>
+            </Button>
           </div>
           <div className="w-full hidden sm:flex flex-col justify-start sm:justify-items-end items-end z-max">
             <Image
