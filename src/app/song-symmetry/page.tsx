@@ -1,15 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
+import React, { use, useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../../lib/redux/hooks";
 import { useRouter } from "next/navigation";
-import sdk from "../lib/spotify-sdk/ClientInstance";
+import sdk from "../../lib/spotify-sdk/ClientInstance";
 import Container from "../components/Container";
-import { debounce } from "lodash";
+import { debounce, map, set } from "lodash";
 import { AudioFeatures, Playlist, Track } from "@spotify/web-api-ts-sdk";
-import Image from "next/image";
-import { setTrack } from "../lib/redux/slices/playerSlices";
+import { setTrack } from "../../lib/redux/slices/playerSlices";
 import Tooltip from "../components/Tooltip";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,11 +17,9 @@ import {
   DialogFooter,
   DialogHeader,
 } from "@/components/ui/dialog";
-import {
-  DialogClose,
-  DialogOverlay,
-  DialogTrigger,
-} from "@radix-ui/react-dialog";
+import { DialogClose } from "@radix-ui/react-dialog";
+import { Loader } from "../components/Loader";
+import TracksGrid from "../components/TracksGrid";
 
 type SongRecommendation = {
   source: Track;
@@ -48,6 +45,17 @@ function SongSymmetry() {
     state: "idle" | "loading" | "success" | "error";
     playlist?: Playlist;
   }>({ state: "idle" });
+  const [recommendationState, setRecommendationState] = useState({
+    fetching: false,
+    fetchNext: false,
+    nextTrackId: "",
+  });
+
+  const playlistTop = useAppSelector((state) => state.playlist.playlist);
+  const topTracksRecomend = map(
+    playlistTop?.[0].tracks,
+    (track) => track.track
+  );
 
   const dispatch = useAppDispatch();
   const router = useRouter();
@@ -61,6 +69,8 @@ function SongSymmetry() {
     if (q.length > 2) {
       const results = await sdk.search(q, ["track"], undefined, 5);
       setSearchResult(results.tracks.items);
+    } else {
+      setSearchResult(undefined);
     }
   };
 
@@ -75,15 +85,15 @@ function SongSymmetry() {
       valence: trackFeatures.valence,
     };
 
-    const sortVides = Object.entries(audioVibes)
+    const sortVibes = Object.entries(audioVibes)
       .sort((a, b) => a[1] - b[1])
       .reverse();
 
     const rcmArguments = {
-      [`min_${sortVides[0][0]}`]: sortVides[0][1] - 0.1,
-      [`max_${sortVides[0][0]}`]: sortVides[0][1] + 0.1,
-      [`min_${sortVides[1][0]}`]: sortVides[1][1] - 0.1,
-      [`max_${sortVides[1][0]}`]: sortVides[1][1] + 0.1,
+      [`min_${sortVibes[0][0]}`]: sortVibes[0][1] - 0.1,
+      [`max_${sortVibes[0][0]}`]: sortVibes[0][1] + 0.1,
+      [`min_${sortVibes[1][0]}`]: sortVibes[1][1] - 0.1,
+      [`max_${sortVibes[1][0]}`]: sortVibes[1][1] + 0.1,
     };
     return rcmArguments;
   };
@@ -92,6 +102,7 @@ function SongSymmetry() {
     track: Track,
     audioFeaturesInput?: AudioFeatures
   ) => {
+    setRecommendationState((state) => ({ ...state, fetching: true }));
     const audioFeatures = audioFeaturesInput
       ? audioFeaturesInput
       : await sdk.tracks.audioFeatures(track.id);
@@ -100,6 +111,11 @@ function SongSymmetry() {
       seed_tracks: [track.id],
       ...rcmArguments,
       limit: 20,
+    });
+    setRecommendationState({
+      fetching: false,
+      fetchNext: false,
+      nextTrackId: "",
     });
     setSongRecommendation({ source: track, recommendation: results });
   };
@@ -130,30 +146,43 @@ function SongSymmetry() {
 
   useEffect(() => {
     (async () => {
-      window.scrollTo(0, 0);
-      const searchParams = new URLSearchParams(window.location.search);
-      const trackId = searchParams.get("trackId");
-      if (!trackId) return;
+      if (!recommendationState.nextTrackId) return;
       try {
         const [track, audioFeatures] = await Promise.all([
-          sdk.tracks.get(trackId),
-          sdk.tracks.audioFeatures(trackId),
+          sdk.tracks.get(recommendationState.nextTrackId),
+          sdk.tracks.audioFeatures(recommendationState.nextTrackId),
         ]);
         onGetRecommendation(track, audioFeatures);
       } catch (error: any) {}
     })();
+  }, [recommendationState.nextTrackId]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const trackId = params.get("trackId");
+    if (trackId) {
+      setRecommendationState({
+        fetching: true,
+        fetchNext: false,
+        nextTrackId: trackId,
+      });
+    }
   }, []);
 
   const debountSearch = debounce(onSearchTrack, 1000);
 
   const renderRecommendation = () => {
+    if (recommendationState.fetching) return <Loader />;
     if (!songRecommendation) return null;
     return (
       <div className="w-full flex flex-col space-y-10 justify-center items-center">
         <div className="w-full flex flex-row justify-start items-center">
           <i
             className="bi bi-arrow-left text-white text-left text-2xl cursor-pointer"
-            onClick={() => setSongRecommendation(undefined)}
+            onClick={() => {
+              setSongRecommendation(undefined);
+              router.replace("/song-symmetry");
+            }}
           />
         </div>
         <div className="w-full flex flex-col space-y-8 justify-center items-center">
@@ -230,6 +259,11 @@ function SongSymmetry() {
                         e.preventDefault();
                         e.stopPropagation();
                         router.replace(`/song-symmetry?trackId=${track.id}`);
+                        setRecommendationState({
+                          fetching: false,
+                          fetchNext: true,
+                          nextTrackId: track.id,
+                        });
                       }}
                     />
                   </Tooltip>
@@ -243,7 +277,16 @@ function SongSymmetry() {
     );
   };
 
+  const onClickRecommendTrack = (track: Track) => {
+    setRecommendationState({
+      fetching: false,
+      fetchNext: true,
+      nextTrackId: track.id,
+    });
+  };
+
   const renderSearchResult = () => {
+    if (recommendationState.fetching) return <Loader />;
     return (
       <>
         <div className="flex flex-col items-center justify-center w-full h-full">
@@ -256,15 +299,19 @@ function SongSymmetry() {
             </h2>
           </div>
         </div>
-        <div className="w-full flex flex-col space-y-2 justify-center items-center">
+        <div
+          className={`w-full flex flex-col ${
+            searchResult ? `space-y-2` : `space-y-10`
+          } justify-center items-center`}
+        >
           <input
-            className="flex w-80 sm:w-[600px] h-14 text-white rounded-md border border-white border-input bg-background px-3 py-2 text-sm sm:text-md md:text-lg lg:text-xl ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex w-80 sm:w-[600px] h-14 text-white rounded-md border border-white border-input bg-background px-3 py-2 text-sm sm:text-md md:text-lg select-none ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="Type a song name"
             type="text"
             value={searchQuery}
             onChange={onQueryChange}
           />
-          {searchResult && (
+          {searchResult ? (
             <div className="w-80 sm:w-[600px] rounded-sm flex flex-col p-4 space-y-4 bg-white">
               {searchResult.map((track) => (
                 <div className="w-full flex flex-col" key={track.id}>
@@ -291,6 +338,16 @@ function SongSymmetry() {
                   </div>
                 </div>
               ))}
+            </div>
+          ) : (
+            <div className="w-full flex flex-col space-y-4">
+              <h3 className="text-md font-medium text-white">
+                Or Find Similar Song to Your Top Tracks
+              </h3>
+              <TracksGrid
+                tracks={topTracksRecomend as Track[]}
+                onClickTrack={onClickRecommendTrack}
+              />
             </div>
           )}
         </div>

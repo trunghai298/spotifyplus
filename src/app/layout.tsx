@@ -5,8 +5,9 @@ import { Inter } from "next/font/google";
 import AuthSessionProvider from "./components/AuthSessionProvider";
 import { Header } from "./components/Header";
 import { EmbedPlayer } from "./components/EmbedPlayer";
-import { Providers } from "./lib/redux/providers";
+import { Providers } from "../lib/redux/providers";
 import "bootstrap-icons/font/bootstrap-icons.css";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,6 +24,7 @@ export default async function RootLayout({
         <body className={`${inter.className} h-full min-h-screen bg-gray-900`}>
           <Providers>
             <EmbedPlayer />
+            <Toaster />
             <Header session={session} />
             {children}
           </Providers>

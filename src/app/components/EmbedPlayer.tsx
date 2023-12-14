@@ -1,7 +1,7 @@
 "use client";
 import React, { FC, HTMLAttributes, useEffect, useRef } from "react";
-import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
-import { setTrack } from "../lib/redux/slices/playerSlices";
+import { useAppDispatch, useAppSelector } from "../../lib/redux/hooks";
+import { setTrack } from "../../lib/redux/slices/playerSlices";
 
 export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const dispatch = useAppDispatch();

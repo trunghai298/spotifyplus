@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../lib/redux/hooks";
 import {
   Album,
   Playlist,
@@ -11,13 +11,21 @@ import {
 } from "@spotify/web-api-ts-sdk";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
-import sdk from "../lib/spotify-sdk/ClientInstance";
-import { setTrack } from "../lib/redux/slices/playerSlices";
-import { map, startCase, sumBy } from "lodash";
-import Image from "next/image";
+import sdk from "../../lib/spotify-sdk/ClientInstance";
+import { setTrack } from "../../lib/redux/slices/playerSlices";
+import { cloneDeep, map, startCase, sumBy } from "lodash";
 import { Loader } from "../components/Loader";
 import Container from "../components/Container";
 import { millisToMinAndSecs } from "@/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useToast } from "@/components/ui/use-toast";
 
 type AlbumTracks = {
   type: "album";
@@ -34,6 +42,7 @@ function TopTracks() {
   const [tracksData, setTracksData] = useState<Tracks | undefined>();
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const { toast } = useToast();
 
   useEffect(() => {
     (async () => {
@@ -145,6 +154,30 @@ function TopTracks() {
     );
   };
 
+  const onRemoveTrack = async (pId: string, uri: string) => {
+    try {
+      await sdk.playlists.removeItemsFromPlaylist(pId, {
+        tracks: [{ uri: uri }],
+      });
+      const playlistData = cloneDeep(tracksData) as PlaylistedTracks;
+      const filteredTracks = playlistData.playlist.tracks.items.filter(
+        (track) => track.track.uri !== uri
+      );
+      playlistData.playlist.tracks.items = filteredTracks;
+      setTracksData(playlistData);
+    } catch (error) {}
+  };
+
+  const onDeletePlaylist = async (pId: string) => {
+    try {
+      await sdk.currentUser.playlists.unfollow(pId);
+      toast({
+        title: "Playlist deleted",
+        description: "Your playlist has been deleted successfully",
+      });
+    } catch (error) {}
+  };
+
   const renderPlaylistTracks = (playlist: Playlist) => {
     return (
       <div className="flex flex-col space-y-4 relative">
@@ -184,16 +217,20 @@ function TopTracks() {
                       )
                     )}
                   </h3>
+                  <i
+                    className="bi bi-trash3 text-lg cursor-pointer"
+                    onClick={() => onDeletePlaylist(playlist.id)}
+                  />
                 </div>
               </div>
             </div>
             <div className="flex flex-col space-y-2">
               {map(playlist.tracks.items, (track: { track: Track }) => (
                 <div
-                  className="flex flex-row space-x-4 items-center justify-start"
+                  className="flex flex-row items-center justify-between"
                   key={track.track.id}
                 >
-                  <div>
+                  <div className="flex flex-row space-x-4 flex-1 items-center justify-start">
                     <img
                       src={track.track.album.images[0].url}
                       alt=""
@@ -202,23 +239,57 @@ function TopTracks() {
                       height={100}
                       loading="lazy"
                     />
+                    <div>
+                      <h3
+                        className="text-lg font-bold cursor-pointer hover:underline"
+                        onClick={() => onClickTrack(track.track)}
+                      >
+                        {track.track.name}
+                      </h3>
+                      <p
+                        className="text-gray-500 cursor-pointer hover:underline"
+                        onClick={() =>
+                          router.push(`/artists/${track.track.artists[0].id}`)
+                        }
+                      >
+                        {track.track.artists[0].name}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h3
-                      className="text-lg font-bold cursor-pointer hover:underline"
-                      onClick={() => onClickTrack(track.track)}
-                    >
-                      {track.track.name}
-                    </h3>
-                    <p
-                      className="text-gray-500 cursor-pointer hover:underline"
-                      onClick={() =>
-                        router.push(`/artists/${track.track.artists[0].id}`)
-                      }
-                    >
-                      {track.track.artists[0].name}
-                    </p>
-                  </div>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <i className="bi bi-three-dots text-lg cursor-pointer" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="bg-white text-gray-700">
+                      <DropdownMenuItem
+                        className="cursor-pointer"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          router.push(
+                            `/song-symmetry?trackId=${track.track.id}`
+                          );
+                        }}
+                      >
+                        <i className="bi bi-search text-xl" />
+                        <DropdownMenuLabel>
+                          Find similar songs
+                        </DropdownMenuLabel>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem className="cursor-pointer">
+                        <i className="bi bi-trash3 text-xl" />
+                        <DropdownMenuLabel
+                          onClick={() =>
+                            onRemoveTrack(playlist.id, track.track.uri)
+                          }
+                        >
+                          Remove from this playlist
+                        </DropdownMenuLabel>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+
+                  <div className="flex flex-row space-x-4 items-center justify-end"></div>
                 </div>
               ))}
             </div>

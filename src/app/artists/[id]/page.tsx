@@ -7,11 +7,11 @@ import {
   TopTracksResult,
 } from "@spotify/web-api-ts-sdk";
 import React, { use, useEffect, useState } from "react";
-import sdk from "../../lib/spotify-sdk/ClientInstance";
+import sdk from "../../../lib/spotify-sdk/ClientInstance";
 import Image from "next/image";
 import { Loader } from "@/app/components/Loader";
-import { useAppDispatch } from "@/app/lib/redux/hooks";
-import { setTrack } from "@/app/lib/redux/slices/playerSlices";
+import { useAppDispatch } from "@/lib/redux/hooks";
+import { setTrack } from "@/lib/redux/slices/playerSlices";
 import Container from "@/app/components/Container";
 import { useRouter } from "next/navigation";
 import { millisToMinutesAndSeconds } from "@/utils";

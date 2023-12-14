@@ -1,15 +1,16 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../lib/redux/hooks";
 import { MaxInt, Page, Track } from "@spotify/web-api-ts-sdk";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
-import sdk from "../lib/spotify-sdk/ClientInstance";
-import { setTrack } from "../lib/redux/slices/playerSlices";
+import sdk from "../../lib/spotify-sdk/ClientInstance";
+import { setTrack } from "../../lib/redux/slices/playerSlices";
 import { map } from "lodash";
 import { Loader } from "./Loader";
 import Image from "next/image";
+import TracksGrid from "./TracksGrid";
 
 type TimeRange = {
   title: "Last 4 weeks" | "Last 6 months" | "All time";
@@ -94,46 +95,11 @@ function TopTracks() {
           </h4>
         </div>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-6">
-        {map(yourTopTracks.items, (track) => (
-          <div className="flex flex-col space-y-2" key={track.id}>
-            <div className="relative">
-              <img
-                src={track.album.images[0].url}
-                alt=""
-                className="rounded-md"
-                width={200}
-                height={200}
-                loading="lazy"
-              />
-              <div
-                className={`h-full w-full absolute top-0 left-0 flex justify-center items-center ${
-                  selectedTrack?.id === track.id ? `opacity-100` : `opacity-0`
-                } hover:opacity-100 cursor-pointer`}
-                onClick={() => onClickTrack(track)}
-              >
-                {selectedTrack?.id === track.id ? (
-                  <i className="bi bi-pause-circle-fill text-gray-300 text-4xl" />
-                ) : (
-                  <i className="bi bi-play-circle-fill text-gray-300 text-4xl"></i>
-                )}
-              </div>
-            </div>
-            <h3
-              className="text-lg font-bold cursor-pointer hover:underline"
-              onClick={() => onClickTrack(track)}
-            >
-              {track.name}
-            </h3>
-            <p
-              className="text-gray-500 cursor-pointer hover:underline"
-              onClick={() => router.push(`/artists/${track.artists[0].id}`)}
-            >
-              {track.artists[0].name}
-            </p>
-          </div>
-        ))}
-      </div>
+      <TracksGrid
+        tracks={yourTopTracks.items}
+        onClickTrack={onClickTrack}
+        selectedTrack={selectedTrack}
+      />
     </div>
   );
 }

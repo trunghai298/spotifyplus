@@ -26,7 +26,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useSession } from "next-auth/react";
-import sdk from "../lib/spotify-sdk/ClientInstance";
+import sdk from "../../lib/spotify-sdk/ClientInstance";
 import { Artist, Track } from "@spotify/web-api-ts-sdk";
 import { millisToMinutesAndSeconds } from "@/utils";
 import { flattenDeep, groupBy, map, sortBy, sum, sumBy } from "lodash";

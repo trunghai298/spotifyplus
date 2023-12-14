@@ -42,8 +42,7 @@ export const setPlaylist =
         };
       })
     );
-    console.log(playlistData);
-    // dispatch(setPlaylistAction({ playlistData }));
+    dispatch(setPlaylistAction({ playlist: playlistData as PlaylistTracks[] }));
   };
 
 export default playlistSlice.reducer;

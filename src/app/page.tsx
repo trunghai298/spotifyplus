@@ -3,7 +3,7 @@
 
 import { SpotifyApi } from "@spotify/web-api-ts-sdk";
 import { useSession, signIn } from "next-auth/react";
-import sdk from "./lib/spotify-sdk/ClientInstance";
+import sdk from "../lib/spotify-sdk/ClientInstance";
 import Image from "next/image";
 import BackGround from "../assets/bg.png";
 import TopTracks from "./components/TopTracks";

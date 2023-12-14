@@ -1,15 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useEffect, useState } from "react";
-import { useAppDispatch } from "../lib/redux/hooks";
+import { useAppDispatch } from "../../lib/redux/hooks";
 import { Page, SimplifiedPlaylist } from "@spotify/web-api-ts-sdk";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
-import sdk from "../lib/spotify-sdk/ClientInstance";
+import sdk from "../../lib/spotify-sdk/ClientInstance";
 import { map } from "lodash";
 import { Loader } from "./Loader";
 import Image from "next/image";
-import { setPlaylist } from "../lib/redux/slices/playlistSlices";
+import { setPlaylist } from "../../lib/redux/slices/playlistSlices";
 
 function UserPlaylists() {
   const [playlists, setPlaylists] = useState<Page<SimplifiedPlaylist>>();
