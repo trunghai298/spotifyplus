@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useEffect, useState } from "react";
 import { useAppDispatch } from "../lib/redux/hooks";
@@ -47,13 +48,12 @@ function UserPlaylists() {
             }
           >
             <div className="relative">
-              <Image
+              <img
                 src={playlist.images[0].url}
                 alt=""
                 className="rounded-md aspect-square object-cover"
                 width={200}
                 height={200}
-                quality={100}
                 loading="lazy"
               />
             </div>

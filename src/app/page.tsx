@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { SpotifyApi } from "@spotify/web-api-ts-sdk";
@@ -69,14 +70,7 @@ export default function Home() {
             </Button>
           </div>
           <div className="w-full hidden sm:flex flex-col justify-start sm:justify-items-end items-end z-max">
-            <Image
-              src={BackGround}
-              alt=""
-              width={500}
-              height={800}
-              quality={100}
-              objectFit="cover"
-            />
+            <img src={BackGround.src} alt="" width={500} height={800} />
           </div>
         </div>
       </div>

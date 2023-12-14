@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
@@ -69,12 +70,11 @@ function TopTracks() {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col justify-center space-y-8">
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-x-4">
-              <Image
+              <img
                 src={album.images[0].url}
                 alt=""
                 width={300}
                 height={300}
-                quality={100}
                 loading="lazy"
                 className="max-h-[200px] sm:max-h-[250px] md:max-h-[250px] lg:max-h-[300px] aspect-square object-cover object-center rounded-lg shadow-md"
               />
@@ -151,13 +151,12 @@ function TopTracks() {
         <div className="flex flex-col gap-6">
           <div className="flex flex-col justify-center space-y-6">
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-x-4">
-              <Image
+              <img
                 src={playlist.images[0].url}
                 alt=""
                 className="rounded-md aspect-video sm:aspect-square sm:max-w-[200px] sm:max-h-[200px] object-cover object-top"
                 width={500}
                 height={100}
-                quality={100}
                 loading="lazy"
               />
               <div className="flex flex-col space-y-2 items-start justify-end">
@@ -195,13 +194,12 @@ function TopTracks() {
                   key={track.track.id}
                 >
                   <div>
-                    <Image
+                    <img
                       src={track.track.album.images[0].url}
                       alt=""
                       className="rounded-md w-[40px] h-[40px] aspect-square object-cover"
                       width={100}
                       height={100}
-                      quality={100}
                       loading="lazy"
                     />
                   </div>

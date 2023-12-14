@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../lib/redux/hooks";
@@ -97,13 +98,12 @@ function TopTracks() {
         {map(yourTopTracks.items, (track) => (
           <div className="flex flex-col space-y-2" key={track.id}>
             <div className="relative">
-              <Image
+              <img
                 src={track.album.images[0].url}
                 alt=""
                 className="rounded-md"
                 width={200}
                 height={200}
-                quality={100}
                 loading="lazy"
               />
               <div

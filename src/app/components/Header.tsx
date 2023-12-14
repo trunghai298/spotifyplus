@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import { signOut } from "next-auth/react";
 import Image from "next/image";
@@ -69,12 +70,11 @@ export const Header = ({ session }: any) => {
                 className="bg-gray-300 text-gray-700 font-semibold py-1 px-2 rounded-md inline-flex items-center"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
-                <Image
+                <img
                   src={session.user.image || ""}
                   alt=""
                   width={30}
                   height={30}
-                  quality={100}
                   className="rounded-full w-[35px] h-[35px]"
                 />
                 <h2 className="text-md hidden sm:inline md:inline font-bold text-gray-900">

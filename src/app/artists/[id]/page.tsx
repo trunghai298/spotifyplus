@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import {
   Artist,
@@ -46,12 +47,11 @@ function ArtistPage() {
     <Container>
       <div className="w-full flex flex-col gap-x-6 md:flex-row">
         <div className="min-w-[300px] flex flex-col justify-start items-center">
-          <Image
+          <img
             src={artist.images[0].url}
             alt=""
             width={400}
             height={400}
-            quality={100}
             className="max-h-[200px] sm:max-h-[250px] md:max-h-[250px] lg:max-h-[300px] w-full aspect-square object-cover object-center rounded-lg shadow-md"
           />
           <div className="w-full py-4">
@@ -92,7 +92,7 @@ function ArtistPage() {
                     <h2 className="text-gray-400">{index + 1}</h2>
                   </td>
                   <td className="flex items-center w-full h-full min-h-[40px] max-w-[300px] gap-x-2 text-white hover:underline hover:cursor-pointer overflow-ellipsis">
-                    <Image
+                    <img
                       src={track.album.images[0].url}
                       alt=""
                       width={30}
@@ -129,7 +129,7 @@ function ArtistPage() {
               className="flex flex-col w-fit"
               onClick={() => router.push(`/tracks?type=album&id=${album.id}`)}
             >
-              <Image
+              <img
                 src={album.images[0].url}
                 alt=""
                 width={200}

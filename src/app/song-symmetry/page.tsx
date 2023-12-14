@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -159,10 +160,9 @@ function SongSymmetry() {
           <div className="w-full flex flex-col space-y-3 sm:flex-row sm:space-x-4 justify-start sm:items-end">
             <div className="h-full flex flex-row space-x-2 sm:space-x-4 md:space-x-8 lg:space-x-12 grow items-end">
               <div className="relative">
-                <Image
+                <img
                   width={400}
                   height={400}
-                  quality={100}
                   src={songRecommendation.source.album.images[0].url}
                   alt=""
                   className="w-[100px] h-[100px] sm:w-[130px] sm:h-[130px] md:w-[200px] md:h-[200px] lg:w-[250px] lg:h-[250px] object-contain rounded-md"
@@ -208,10 +208,9 @@ function SongSymmetry() {
                   className="w-full flex flex-row space-x-4 justify-start items-center rounded-md cursor-pointer"
                   onClick={() => dispatch(setTrack(track))}
                 >
-                  <Image
+                  <img
                     width={100}
                     height={100}
-                    quality={100}
                     className="w-[40px] h-[40px] object-contain rounded-lg"
                     src={track.album.images[0].url}
                     alt=""
@@ -273,7 +272,7 @@ function SongSymmetry() {
                     className="w-full flex flex-row space-x-4 justify-start items-center px-2 py-1 rounded-md hover:bg-gray-400 cursor-pointer"
                     onClick={() => onGetRecommendation(track)}
                   >
-                    <Image
+                    <img
                       width={100}
                       height={100}
                       className="w-[40px] h-[40px] object-contain rounded-md"

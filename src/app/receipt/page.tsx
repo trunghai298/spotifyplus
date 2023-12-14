@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
@@ -244,8 +245,8 @@ function Receiptify() {
           } `}
           onClick={() => setReceipt({ ...receipt, background: 1 })}
         >
-          <Image
-            src={Bg1}
+          <img
+            src={Bg1.src}
             alt=""
             className="absolute object-cover w-full h-full"
           />
@@ -265,8 +266,8 @@ function Receiptify() {
           } `}
           onClick={() => setReceipt({ ...receipt, background: 2 })}
         >
-          <Image
-            src={Bg2}
+          <img
+            src={Bg2.src}
             alt=""
             className="absolute object-cover w-full h-full"
           />
@@ -286,8 +287,8 @@ function Receiptify() {
           } `}
           onClick={() => setReceipt({ ...receipt, background: 3 })}
         >
-          <Image
-            src={Bg3}
+          <img
+            src={Bg3.src}
             alt=""
             className="absolute object-cover w-full h-full"
           />
@@ -307,8 +308,8 @@ function Receiptify() {
           } `}
           onClick={() => setReceipt({ ...receipt, background: 4 })}
         >
-          <Image
-            src={Bg4}
+          <img
+            src={Bg4.src}
             alt=""
             className="absolute object-cover w-full h-full"
           />
