@@ -67,19 +67,21 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
         dragging ? "transition" : "transition-all"
       }  ease-in-out duration-500 bottom-0 right-8 z-50 box-border`}
     >
-      <i
-        className={`select-none bi ${
-          minimized ? "bi-arrows-angle-expand" : "bi-dash"
-        } text-gray-300 ${
-          minimized ? "text-sm" : "text-2xl"
-        } font-bold cursor-pointer absolute right-12 -top-7`}
-        onClick={() => setMinimized(!minimized)}
-      />
-      <i className="select-none bi bi-arrows-move text-gray-300 text-md cursor-pointer absolute right-6 -top-7" />
-      <i
-        className="bi bi-x-circle-fill text-gray-300 text-1xl cursor-pointer absolute -right-1 -top-7"
-        onClick={() => dispatch(setTrack(undefined))}
-      />
+      <div className="absolute flex items-center justify-center space-x-1 right-0 -top-7">
+        <i
+          className={`select-none bi ${
+            minimized ? "bi-arrows-angle-expand" : "bi-dash"
+          } text-gray-300 ${
+            minimized ? "text-sm" : "text-2xl"
+          } font-bold cursor-pointer`}
+          onClick={() => setMinimized(!minimized)}
+        />
+        <i className="select-none bi bi-arrows-move text-gray-300 text-md cursor-pointer" />
+        <i
+          className="bi bi-x-lg text-gray-300 text-lg cursor-pointer "
+          onClick={() => dispatch(setTrack(undefined))}
+        />
+      </div>
       <iframe
         src={`https://open.spotify.com/embed/track/${track?.id}?utm_source=generator`}
         width="100%"
