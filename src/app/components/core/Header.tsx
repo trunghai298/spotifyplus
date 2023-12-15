@@ -1,21 +1,21 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import { signOut } from "next-auth/react";
-import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-export const Header = ({ session }: any) => {
+export const Header = () => {
   const router = useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const session = useSession();
 
   if (!session) return null;
   return (
     <header className="sticky -top-[1px] w-full p-2 sm:px-10 bg-gray-900 z-max flex justify-between items-center">
       <nav className="flex flex-wrap w-full items-center justify-between sm:space-x-4">
         <div className="flex gap-x-1 items-center">
-          <i className="bi bi-spotify"></i>
           <a
             className="text-2xl font-bold text-white cursor-pointer"
             onClick={() => router.push("/")}
@@ -70,15 +70,17 @@ export const Header = ({ session }: any) => {
                 className="bg-gray-300 text-gray-700 font-semibold py-1 px-2 rounded-md inline-flex items-center"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
-                <img
-                  src={session.user.image || ""}
-                  alt=""
-                  width={30}
-                  height={30}
-                  className="rounded-full w-[35px] h-[35px]"
-                />
+                <Avatar className="rounded-full w-[35px] h-[35px]">
+                  <AvatarImage
+                    src={
+                      session.data?.user?.image || "https://i.pravatar.cc/300"
+                    }
+                    alt="user-avatar"
+                  />
+                  <AvatarFallback>{session.data?.user?.name}</AvatarFallback>
+                </Avatar>
                 <h2 className="text-md hidden sm:inline md:inline font-bold text-gray-900">
-                  {session.user.name}
+                  {session.data?.user?.name}
                 </h2>
                 {isDropdownOpen ? (
                   <i className="bi bi-caret-up-fill text-gray-900" />
@@ -97,7 +99,6 @@ export const Header = ({ session }: any) => {
                       <a
                         className="text-sm text-gray-500 bg-white hover:bg-gray-200 rounded-md py-1 px-2 block whitespace-no-wrap"
                         href="#"
-                        onClick={() => signOut()}
                       >
                         Profile
                       </a>

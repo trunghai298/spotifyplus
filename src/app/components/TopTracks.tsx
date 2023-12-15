@@ -8,7 +8,7 @@ import { signOut } from "next-auth/react";
 import sdk from "../../lib/spotify-sdk/ClientInstance";
 import { setTrack } from "../../lib/redux/slices/playerSlices";
 import { map } from "lodash";
-import { Loader } from "./Loader";
+import { Loader } from "./core/Loader";
 import Image from "next/image";
 import TracksGrid from "./TracksGrid";
 

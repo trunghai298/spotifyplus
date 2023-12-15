@@ -9,10 +9,10 @@ import {
 import React, { use, useEffect, useState } from "react";
 import sdk from "../../../lib/spotify-sdk/ClientInstance";
 import Image from "next/image";
-import { Loader } from "@/app/components/Loader";
+import { Loader } from "@/app/components/core/Loader";
 import { useAppDispatch } from "@/lib/redux/hooks";
 import { setTrack } from "@/lib/redux/slices/playerSlices";
-import Container from "@/app/components/Container";
+import Container from "@/app/components/core/Container";
 import { useRouter } from "next/navigation";
 import { millisToMinutesAndSeconds } from "@/utils";
 

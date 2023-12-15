@@ -3,11 +3,12 @@ import "./globals.css";
 import { getServerSession } from "next-auth";
 import { Inter } from "next/font/google";
 import AuthSessionProvider from "./components/AuthSessionProvider";
-import { Header } from "./components/Header";
-import { EmbedPlayer } from "./components/EmbedPlayer";
+import { Header } from "./components/core/Header";
+import { EmbedPlayer } from "./components/core/EmbedPlayer";
 import { Providers } from "../lib/redux/providers";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Toaster } from "@/components/ui/toaster";
+import Footer from "./components/core/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,8 +26,9 @@ export default async function RootLayout({
           <Providers>
             <EmbedPlayer />
             <Toaster />
-            <Header session={session} />
+            <Header />
             {children}
+            <Footer />
           </Providers>
         </body>
       </AuthSessionProvider>

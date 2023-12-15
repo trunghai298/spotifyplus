@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import sdk from "../../lib/spotify-sdk/ClientInstance";
 import { map } from "lodash";
-import { Loader } from "./Loader";
+import { Loader } from "./core/Loader";
 import Image from "next/image";
 import { setPlaylist } from "../../lib/redux/slices/playlistSlices";
 

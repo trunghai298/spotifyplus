@@ -5,7 +5,7 @@ import React, { use, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../lib/redux/hooks";
 import { useRouter } from "next/navigation";
 import sdk from "../../lib/spotify-sdk/ClientInstance";
-import Container from "../components/Container";
+import Container from "../components/core/Container";
 import { debounce, map, set } from "lodash";
 import { AudioFeatures, Playlist, Track } from "@spotify/web-api-ts-sdk";
 import { setTrack } from "../../lib/redux/slices/playerSlices";
@@ -18,7 +18,7 @@ import {
   DialogHeader,
 } from "@/components/ui/dialog";
 import { DialogClose } from "@radix-ui/react-dialog";
-import { Loader } from "../components/Loader";
+import { Loader } from "../components/core/Loader";
 import TracksGrid from "../components/TracksGrid";
 
 type SongRecommendation = {

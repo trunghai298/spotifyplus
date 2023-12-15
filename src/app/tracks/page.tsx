@@ -14,8 +14,8 @@ import { signOut } from "next-auth/react";
 import sdk from "../../lib/spotify-sdk/ClientInstance";
 import { setTrack } from "../../lib/redux/slices/playerSlices";
 import { cloneDeep, map, startCase, sumBy } from "lodash";
-import { Loader } from "../components/Loader";
-import Container from "../components/Container";
+import { Loader } from "../components/core/Loader";
+import Container from "../components/core/Container";
 import { millisToMinAndSecs } from "@/utils";
 import {
   DropdownMenu,

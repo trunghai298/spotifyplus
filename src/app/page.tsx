@@ -8,7 +8,7 @@ import Image from "next/image";
 import BackGround from "../assets/bg.png";
 import TopTracks from "./components/TopTracks";
 import UserPlaylists from "./components/UserPlaylists";
-import Container from "./components/Container";
+import Container from "./components/core/Container";
 import { Button } from "@/components/ui/button";
 
 export default function Home() {
@@ -93,7 +93,7 @@ const WelcomeSection = ({ sdk }: { sdk: SpotifyApi }) => {
         <div className="flex flex-col items-center space-y-4 text-center">
           <div className="">
             <h1 className="text-3xl text-white font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
-              Personalized Insights from Spotify
+              Personalized Your Music Journey
             </h1>
             <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl py-4 dark:text-gray-400">
               Uncover your music journey with personalized analytics and data.

@@ -1,7 +1,7 @@
 "use client";
 import React, { FC, HTMLAttributes, useEffect, useRef } from "react";
-import { useAppDispatch, useAppSelector } from "../../lib/redux/hooks";
-import { setTrack } from "../../lib/redux/slices/playerSlices";
+import { useAppDispatch, useAppSelector } from "../../../lib/redux/hooks";
+import { setTrack } from "../../../lib/redux/slices/playerSlices";
 
 export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const dispatch = useAppDispatch();
@@ -15,7 +15,7 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
     let y = 0;
     const ele = ref.current;
     if (!ele || !track) return;
-    document.title = track.name + "-" + track.artists[0].name;
+    document.title = `🎶 ${track.name} - ${track.artists[0].name} 🎶`;
 
     const mouseDownHandler = function (e: any) {
       setDragging(true);
@@ -63,7 +63,7 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
         right: minimized ? 0 : 8,
         left: minimized ? "unset" : "",
       }}
-      className={`select-none fixed w-[80px] h-[80px] md:w-1/3 lg:w-1/4 ${
+      className={`select-none fixed h-[80px] md:w-1/3 lg:w-1/4 ${
         dragging ? "transition" : "transition-all"
       }  ease-in-out duration-500 bottom-0 right-8 z-50 box-border`}
     >
