@@ -20,7 +20,7 @@ export const Header = ({ session }: any) => {
             className="text-2xl font-bold text-white cursor-pointer"
             onClick={() => router.push("/")}
           >
-            Spotify++
+            Song Symmetry
           </a>
         </div>
         <div

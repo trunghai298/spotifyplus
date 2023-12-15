@@ -32,7 +32,7 @@ export default function Home() {
           </div>
           <div className="h-full min-h-screen flex flex-col items-center justify-center z-max">
             <h1 className="text-5xl font-extrabold sm:text-7xl md:text-8xl lg:text-9xl">
-              Spotify+_+
+              Song Symmetry
             </h1>
             <div className="mt-4">
               <svg
