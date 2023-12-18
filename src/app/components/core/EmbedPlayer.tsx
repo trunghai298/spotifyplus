@@ -16,7 +16,7 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
     const ele = ref.current;
     if (!ele || !track) return;
     document.title = `🎶 ${track.name} - ${track.artists[0].name} 🎶`;
-
+    setMinimized(false);
     const mouseDownHandler = function (e: any) {
       setDragging(true);
       x = e.clientX;
