@@ -31,6 +31,7 @@ import { Artist, Track } from "@spotify/web-api-ts-sdk";
 import { millisToMinutesAndSeconds } from "@/utils";
 import { flattenDeep, groupBy, map, sortBy, sum, sumBy } from "lodash";
 import { toPng } from "html-to-image";
+import Container from "../components/core/Container";
 
 type Receipt = {
   title: string;
@@ -521,7 +522,7 @@ function Receiptify() {
   }, [receipt]);
 
   return (
-    <div className="m-auto w-full px-4 sm:px-24 py-4">
+    <Container>
       <div className="w-full h-full flex flex-col justify-center items-center">
         <div className="w-full h-full flex flex-col space-y-6 space-x-0 sm:flex-row sm:space-y-0 sm:space-x-6 justify-between mt-12">
           <div className="w-full h-full max-w-full sm:max-w-[70%] flex flex-col items-start">
@@ -554,7 +555,7 @@ function Receiptify() {
           </div>
         </div>
       </div>
-    </div>
+    </Container>
   );
 }
 

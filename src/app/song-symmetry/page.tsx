@@ -399,7 +399,7 @@ function SongSymmetry() {
   return (
     <Container>
       {renderPlaylistDialog()}
-      <div className="mt-12 flex flex-col space-y-6 items-center justify-center w-full h-full">
+      <div className="flex flex-col space-y-6 items-center justify-center w-full h-full">
         {songRecommendation ? renderRecommendation() : renderSearchResult()}
       </div>
     </Container>
