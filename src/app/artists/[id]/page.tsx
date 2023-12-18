@@ -6,15 +6,15 @@ import {
   SimplifiedAlbum,
   TopTracksResult,
 } from "@spotify/web-api-ts-sdk";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import sdk from "../../../lib/spotify-sdk/ClientInstance";
-import Image from "next/image";
 import { Loader } from "@/app/components/core/Loader";
 import { useAppDispatch } from "@/lib/redux/hooks";
 import { setTrack } from "@/lib/redux/slices/playerSlices";
 import Container from "@/app/components/core/Container";
 import { useRouter } from "next/navigation";
 import { millisToMinutesAndSeconds } from "@/utils";
+import Link from "next/link";
 
 function ArtistPage() {
   const [artist, setArtist] = useState<Artist>();
@@ -64,6 +64,13 @@ function ArtistPage() {
             <p className="text-white text-md font-medium">
               {artist.followers.total} Followers
             </p>
+            <Link
+              href={artist.external_urls.spotify}
+              target="_blank"
+              className="text-md font-medium hover:cursor-pointer hover:underline text-spotify-green"
+            >
+              Open in Spotify <i className="bi bi-box-arrow-up-right text-sm" />
+            </Link>
           </div>
         </div>
         <div className="sm:mt-8 md:mt-0 lg:mt-0 xl:mt-0 overflow-scroll">

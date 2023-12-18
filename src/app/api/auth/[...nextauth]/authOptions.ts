@@ -18,7 +18,7 @@ export type AuthUser = {
 const authOptions: AuthOptions = {
   providers: [spotifyProfile],
   session: {
-    maxAge: 120 * 60, // 1hr
+    maxAge: 60 * 60, // 1hr
   },
   callbacks: {
     async jwt({ token, account }: { token: JWT; account: Account | null }) {
@@ -38,6 +38,7 @@ const authOptions: AuthOptions = {
       };
 
       if (Date.now() < updatedToken.expires_at) {
+        console.log("refreshAccessToken");
         return refreshAccessToken(updatedToken);
       }
 

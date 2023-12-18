@@ -1,21 +1,26 @@
 "use client";
 import React, { FC, HTMLAttributes, useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../../../lib/redux/hooks";
-import { setTrack } from "../../../lib/redux/slices/playerSlices";
+import { closePlayer, setTrack } from "../../../lib/redux/slices/playerSlices";
 
 export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const dispatch = useAppDispatch();
-  const { track } = useAppSelector((state) => state.player);
+  const { track, type, size, src, state } = useAppSelector(
+    (state) => state.player
+  );
   const [minimized, setMinimized] = React.useState(false);
   const [dragging, setDragging] = React.useState(false);
+
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let x = 0;
     let y = 0;
     const ele = ref.current;
-    if (!ele || !track) return;
-    document.title = `🎶 ${track.name} - ${track.artists[0].name} 🎶`;
+    if (!ele || state === "closed") return;
+    if (track) {
+      document.title = `🎶 ${track.name} - ${track.artists[0].name} 🎶`;
+    }
     setMinimized(false);
     const mouseDownHandler = function (e: any) {
       setDragging(true);
@@ -50,22 +55,42 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
       ele.removeEventListener("mousedown", mouseDownHandler);
       ele.removeEventListener("mousemove", mouseMoveHandler);
     };
-  }, [track]);
+  }, [track, state]);
 
   useEffect(() => {
-    if (!dragging && minimized) {
+    if (!dragging) {
       const player = ref.current;
-      if (player && player.offsetLeft > window.innerWidth / 2) {
-        player?.style.setProperty("right", "0");
-        player?.style.setProperty("left", "unset");
+      if (player && player.offsetLeft < 0) {
+        player.style.setProperty("left", "0");
+        player.style.setProperty("right", "unset");
+      }
+      if (player && player.offsetTop < 0) {
+        player.style.setProperty("top", "100px");
+        player.style.setProperty("bottom", "unset");
+      }
+      if (
+        player &&
+        window.innerWidth - player.offsetLeft < player.clientWidth
+      ) {
+        player.style.setProperty("right", "0");
+        player.style.setProperty("left", "unset");
+      }
+      if (minimized) {
+        if (player && player.offsetLeft > window.innerWidth / 2) {
+          player?.style.setProperty("right", "0");
+          player?.style.setProperty("left", "unset");
+        } else {
+          player?.style.setProperty("left", "0");
+          player?.style.setProperty("right", "unset");
+        }
       } else {
-        player?.style.setProperty("left", "0");
-        player?.style.setProperty("right", "unset");
+        player?.style.setProperty("top", "unset");
+        player?.style.setProperty("bottom", "4rem");
       }
     }
-  }, [dragging, minimized]);
+  }, [dragging, minimized, size]);
 
-  if (!track) return null;
+  if (state === "closed") return null;
 
   return (
     <div
@@ -76,9 +101,13 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
         right: minimized ? 0 : 8,
         left: minimized ? "unset" : "",
       }}
-      className={`select-none fixed h-[80px] md:w-1/3 lg:w-1/4 ${
+      className={`select-none fixed ${
+        size === "compact" ? "h-[80px]" : "h-[300px]"
+      } md:w-1/3 lg:w-1/4 ${
         dragging ? "transition" : "transition-all"
-      }  ease-in-out duration-500 bottom-0 right-8 z-50 box-border`}
+      }  ease-in-out duration-500 ${
+        size === "compact" ? "bottom-0" : "bottom-16"
+      } right-8 z-50 box-border`}
     >
       <div className="absolute flex items-center justify-center space-x-1 right-0 -top-7">
         <i
@@ -92,13 +121,13 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
         <i className="select-none bi bi-arrows-move text-gray-300 text-md cursor-pointer" />
         <i
           className="bi bi-x-lg text-gray-300 text-lg cursor-pointer "
-          onClick={() => dispatch(setTrack(undefined))}
+          onClick={() => dispatch(closePlayer())}
         />
       </div>
       <iframe
-        src={`https://open.spotify.com/embed/track/${track?.id}?utm_source=generator`}
+        src={src}
         width="100%"
-        height={80}
+        height={size === "compact" || minimized ? 80 : 352}
         frameBorder="0"
         allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
         loading="lazy"

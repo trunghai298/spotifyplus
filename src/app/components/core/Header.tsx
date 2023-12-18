@@ -11,9 +11,10 @@ export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const session = useSession();
 
-  if (!session) return null;
+  if (session.status === "unauthenticated") return null;
+
   return (
-    <header className="sticky -top-[1px] w-full p-2 sm:px-10 bg-gray-900 z-max flex justify-between items-center">
+    <header className="sticky -top-[1px] w-full p-2 sm:px-10 bg-gray-900 z-50 flex justify-between items-center">
       <nav className="flex flex-wrap w-full items-center justify-between sm:space-x-4">
         <div className="flex gap-x-1 items-center">
           <a
@@ -108,9 +109,8 @@ export const Header = () => {
                       <a
                         className="text-sm text-gray-500 bg-white hover:bg-gray-200 rounded-md py-1 px-2 block whitespace-no-wrap"
                         href="#"
-                        onClick={() => {
-                          router.push("/");
-                          signOut();
+                        onClick={async () => {
+                          await signOut({ callbackUrl: "/" });
                         }}
                       >
                         Sign out

@@ -71,6 +71,7 @@ If you have any questions about these Terms, please contact us at [songsymmetry@
           font-size: 24px;
           font-weight: 700;
           margin-bottom: 8px;
+          margin-top: 8px;
         }
         ul {
           padding: 16px;

@@ -44,6 +44,7 @@ export async function refreshAccessToken(token: JWT) {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       method: "POST",
+      cache: "no-cache",
     });
 
     const refreshedTokens = await response.json();

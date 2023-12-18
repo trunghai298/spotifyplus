@@ -76,6 +76,7 @@ If you have any questions or concerns about this Privacy Policy or our practices
           font-size: 24px;
           font-weight: 700;
           margin-bottom: 8px;
+          margin-top: 8px;
         }
         ul {
           padding: 16px;

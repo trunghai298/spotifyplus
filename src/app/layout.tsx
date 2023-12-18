@@ -18,7 +18,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerSession(authOptions);
-
   return (
     <html lang="en">
       <AuthSessionProvider session={session}>
@@ -28,7 +27,7 @@ export default async function RootLayout({
             <Toaster />
             <Header />
             {children}
-            <Footer />
+            {session && <Footer />}
           </Providers>
         </body>
       </AuthSessionProvider>

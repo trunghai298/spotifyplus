@@ -12,7 +12,11 @@ import {
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import sdk from "../../lib/spotify-sdk/ClientInstance";
-import { setTrack } from "../../lib/redux/slices/playerSlices";
+import {
+  setAlbum,
+  setPlaylist,
+  setTrack,
+} from "../../lib/redux/slices/playerSlices";
 import { cloneDeep, map, startCase, sumBy } from "lodash";
 import { Loader } from "../components/core/Loader";
 import Container from "../components/core/Container";
@@ -25,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 
 type AlbumTracks = {
   type: "album";
@@ -42,6 +47,14 @@ function TopTracks() {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { toast } = useToast();
+
+  const openPlaylistInSpotify = (playlist: Playlist) => {
+    window.open(playlist.external_urls.spotify, "_blank");
+  };
+
+  const openAlbumInSpotify = (album: Album) => {
+    window.open(album.external_urls.spotify, "_blank");
+  };
 
   useEffect(() => {
     (async () => {
@@ -86,7 +99,7 @@ function TopTracks() {
                 loading="lazy"
                 className="max-h-[200px] sm:max-h-[250px] md:max-h-[250px] lg:max-h-[300px] aspect-square object-cover object-center rounded-lg shadow-md"
               />
-              <div className="flex flex-col space-y-2 items-start justify-end">
+              <div className="flex flex-col space-y-2 items-start justify-end grow">
                 <h4 className="text-white text-sm font-medium">
                   {startCase(album.album_type)}
                 </h4>
@@ -114,6 +127,22 @@ function TopTracks() {
                     )}
                   </h3>
                 </div>
+              </div>
+              <div className="w-full sm:w-auto flex flex-col space-y-2 items-start justify-end">
+                <Button
+                  variant="outline"
+                  className="w-full min-w-[100%] sm:min-w-[300px] h-auto text-white text-xl sm:text-2xl font-bold px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-3 md:py-4 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  onClick={() => dispatch(setAlbum(album))}
+                >
+                  Play here
+                </Button>
+                <Button
+                  onClick={() => openAlbumInSpotify(album)}
+                  className="w-full min-w-[100%] sm:min-w-[300px] h-auto text-white text-xl sm:text-2xl font-bold px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-3 md:py-4 rounded-full bg-spotify-green hover:bg-spotify-green/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <i className="bi bi-spotify text-xl mr-2" />
+                  Play on Spotify
+                </Button>
               </div>
             </div>
             <div className="flex flex-col space-y-2">
@@ -172,7 +201,7 @@ function TopTracks() {
       await sdk.currentUser.playlists.unfollow(pId);
       toast({
         title: "Playlist deleted",
-        description: "Your playlist has been deleted successfully",
+        description: "Your playlist has been deleted successfully!",
       });
     } catch (error) {}
   };
@@ -182,45 +211,65 @@ function TopTracks() {
       <div className="flex flex-col space-y-4 relative">
         <div className="flex flex-col gap-6">
           <div className="flex flex-col justify-center space-y-6">
-            <div className="flex flex-col sm:flex-row space-y-3 sm:space-x-4">
-              <img
-                src={playlist.images[0].url}
-                alt=""
-                className="rounded-md aspect-video sm:aspect-square sm:max-w-[200px] sm:max-h-[200px] object-cover object-top"
-                width={500}
-                height={100}
-                loading="lazy"
-              />
-              <div className="flex flex-col space-y-2 items-start justify-end">
-                <h4 className="text-white text-sm font-medium">
-                  {startCase(playlist.type)}
-                </h4>
-                <h2 className="text-white text-4xl font-bold cursor-pointer hover:underline">
-                  {playlist.name}
-                </h2>
-                <div className="flex items-center justify-between space-x-4">
-                  <h3
-                    className="text-white text-xs sm:text-sm md:text-md font-medium cursor-pointer hover:underline"
-                    onClick={() => router.push(`/artists/${playlist.owner.id}`)}
-                  >
-                    {playlist.owner.display_name}
-                  </h3>
-                  <h3 className="text-gray-400 text-xs sm:text-sm md:text-md font-normal">
-                    {playlist.tracks.items.length} songs
-                  </h3>
-                  <h3 className="text-gray-400 text-xs sm:text-sm md:text-md font-normal">
-                    {millisToMinAndSecs(
-                      sumBy(
-                        playlist.tracks.items,
-                        (track) => track.track.duration_ms
-                      )
-                    )}
-                  </h3>
-                  <i
-                    className="bi bi-trash3 text-lg cursor-pointer"
-                    onClick={() => onDeletePlaylist(playlist.id)}
-                  />
+            <div className="flex flex-col sm:flex-row space-y-3 sm:space-x-4 items-end justify-between">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-x-4 grow">
+                <img
+                  src={playlist.images[0].url}
+                  alt=""
+                  className="rounded-md aspect-video sm:aspect-square sm:max-w-[200px] sm:max-h-[200px] object-cover object-top"
+                  width={500}
+                  height={100}
+                  loading="lazy"
+                />
+                <div className="flex flex-col space-y-2 items-start justify-end">
+                  <h4 className="text-white text-sm font-medium">
+                    {startCase(playlist.type)}
+                  </h4>
+                  <h2 className="text-white text-4xl font-bold cursor-pointer hover:underline">
+                    {playlist.name}
+                  </h2>
+                  <div className="flex items-center justify-between space-x-4">
+                    <h3
+                      className="text-white text-xs sm:text-sm md:text-md font-medium cursor-pointer hover:underline"
+                      onClick={() =>
+                        router.push(`/artists/${playlist.owner.id}`)
+                      }
+                    >
+                      {playlist.owner.display_name}
+                    </h3>
+                    <h3 className="text-gray-400 text-xs sm:text-sm md:text-md font-normal">
+                      {playlist.tracks.items.length} songs
+                    </h3>
+                    <h3 className="text-gray-400 text-xs sm:text-sm md:text-md font-normal">
+                      {millisToMinAndSecs(
+                        sumBy(
+                          playlist.tracks.items,
+                          (track) => track.track.duration_ms
+                        )
+                      )}
+                    </h3>
+                    <i
+                      className="bi bi-trash3 text-lg cursor-pointer"
+                      onClick={() => onDeletePlaylist(playlist.id)}
+                    />
+                  </div>
                 </div>
+              </div>
+              <div className="w-full sm:w-auto flex flex-col space-y-2 items-start justify-end">
+                <Button
+                  variant="outline"
+                  className="w-full min-w-[100%] sm:min-w-[300px] h-auto text-white text-xl sm:text-2xl font-bold px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-3 md:py-4 rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  onClick={() => dispatch(setPlaylist(playlist))}
+                >
+                  Play here
+                </Button>
+                <Button
+                  onClick={() => openPlaylistInSpotify(playlist)}
+                  className="w-full min-w-[100%] sm:min-w-[300px] h-auto text-white text-xl sm:text-2xl font-bold px-2 sm:px-4 md:px-6 lg:px-8 py-2 sm:py-3 md:py-4 rounded-full bg-spotify-green hover:bg-spotify-green/90 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <i className="bi bi-spotify text-xl mr-2" />
+                  Play on Spotify
+                </Button>
               </div>
             </div>
             <div className="flex flex-col space-y-2">
