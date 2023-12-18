@@ -52,6 +52,19 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
     };
   }, [track]);
 
+  useEffect(() => {
+    if (!dragging && minimized) {
+      const player = ref.current;
+      if (player && player.offsetLeft > window.innerWidth / 2) {
+        player?.style.setProperty("right", "0");
+        player?.style.setProperty("left", "unset");
+      } else {
+        player?.style.setProperty("left", "0");
+        player?.style.setProperty("right", "unset");
+      }
+    }
+  }, [dragging, minimized]);
+
   if (!track) return null;
 
   return (
