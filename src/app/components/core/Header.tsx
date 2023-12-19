@@ -99,7 +99,7 @@ export const Header = () => {
                     <li className="">
                       <a
                         className="text-sm text-gray-500 bg-white hover:bg-gray-200 rounded-md py-1 px-2 block whitespace-no-wrap"
-                        href="#"
+                        href="/profile"
                       >
                         Profile
                       </a>

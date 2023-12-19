@@ -1,7 +1,10 @@
 "use client";
 import React, { FC, HTMLAttributes, useEffect, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../../../lib/redux/hooks";
-import { closePlayer, setTrack } from "../../../lib/redux/slices/playerSlices";
+import {
+  closePlayer,
+  expandPlayer,
+} from "../../../lib/redux/slices/playerSlices";
 
 export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
   const dispatch = useAppDispatch();
@@ -110,6 +113,16 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
       } right-8 z-50 box-border`}
     >
       <div className="absolute flex items-center justify-center space-x-1 right-0 -top-7">
+        {!minimized && (
+          <i
+            className={`select-none bi ${
+              size === "compact"
+                ? "bi-aspect-ratio"
+                : "bi-arrows-angle-contract"
+            } font-bold cursor-pointer`}
+            onClick={() => dispatch(expandPlayer())}
+          />
+        )}
         <i
           className={`select-none bi ${
             minimized ? "bi-arrows-angle-expand" : "bi-dash"

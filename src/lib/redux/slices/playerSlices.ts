@@ -46,6 +46,13 @@ export const playerSlice = createSlice({
     closePlayer: (state) => {
       state.state = "closed";
     },
+    expandPlayer: (state) => {
+      if (state.size === "compact") {
+        state.size = "full";
+      } else {
+        state.size = "compact";
+      }
+    },
   },
 });
 
@@ -55,6 +62,7 @@ const {
   setPlaylist: setPlaylistAction,
   setAlbum: setAlbumAction,
   closePlayer: closePlayerAction,
+  expandPlayer: expandPlayerAction,
 } = playerSlice.actions;
 
 export const setTrack =
@@ -74,6 +82,10 @@ export const setAlbum =
 
 export const closePlayer = () => async (dispatch: AppDispatch) => {
   dispatch(closePlayerAction());
+};
+
+export const expandPlayer = () => async (dispatch: AppDispatch) => {
+  dispatch(expandPlayerAction());
 };
 
 export default playerSlice.reducer;

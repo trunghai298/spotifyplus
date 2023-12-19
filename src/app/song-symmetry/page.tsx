@@ -20,6 +20,7 @@ import {
 import { DialogClose } from "@radix-ui/react-dialog";
 import { Loader } from "../components/core/Loader";
 import TracksGrid from "../components/TracksGrid";
+import { setOpenSubscribeDialog } from "@/lib/redux/slices/subscribeSlices";
 
 type SongRecommendation = {
   source: Track;
@@ -171,7 +172,7 @@ function SongSymmetry() {
 
   const debountSearch = debounce(onSearchTrack, 1000);
 
-  const renderRecommendation = () => {
+  const renderRecommendations = () => {
     if (recommendationState.fetching) return <Loader />;
     if (!songRecommendation) return null;
     return (
@@ -229,7 +230,7 @@ function SongSymmetry() {
             </div>
           </div>
         </div>
-        <div className="w-full flex flex-col space-y-2 justify-center items-center">
+        <div className="w-full flex flex-col space-y-6 justify-center items-center">
           <div className="w-full rounded-sm flex flex-col space-y-4">
             {songRecommendation?.recommendation.tracks.map((track) => (
               <div className="w-full flex flex-col" key={track.id}>
@@ -271,6 +272,15 @@ function SongSymmetry() {
                 </div>
               </div>
             ))}
+          </div>
+          <div className="w-full flex flex-row space-x-4 justify-center items-center">
+            <Button
+              onClick={() => dispatch(setOpenSubscribeDialog())}
+              variant="outline"
+              className="w-full sm:w-[400px] p-6 sm:p-8 text-xl sm:text-2xl font-bold text-spotify-green hover:text-spotify-green-light"
+            >
+              Want More Songs Like This?
+            </Button>
           </div>
         </div>
       </div>
@@ -359,7 +369,7 @@ function SongSymmetry() {
     return (
       <Dialog open={playlist.state === "success"}>
         <DialogClose onClick={() => setPlaylist({ state: "idle" })}>
-          <DialogContent className="rounded-3xl border-none p-8 bg-purple-950 flex flex-col justify-center text-center items-center">
+          <DialogContent className="rounded-3xl border-none p-8 bg-gray-900 flex flex-col justify-center text-center items-center">
             <DialogHeader className="text-center">
               <span className="text-6xl">&#127881;</span>
               <h1 className="text-2xl w-full sm:text-3xl md:text-4xl font-bold text-white">
@@ -400,7 +410,7 @@ function SongSymmetry() {
     <Container>
       {renderPlaylistDialog()}
       <div className="flex flex-col space-y-6 items-center justify-center w-full h-full">
-        {songRecommendation ? renderRecommendation() : renderSearchResult()}
+        {songRecommendation ? renderRecommendations() : renderSearchResult()}
       </div>
     </Container>
   );

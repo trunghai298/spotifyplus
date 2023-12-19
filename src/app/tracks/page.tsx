@@ -35,12 +35,12 @@ type AlbumTracks = {
   type: "album";
   album: Album;
 };
-type PlaylistedTracks = {
+type PlaylistTracks = {
   type: "playlist";
   playlist: Playlist;
 };
 
-type Tracks = PlaylistedTracks | AlbumTracks | undefined;
+type Tracks = PlaylistTracks | AlbumTracks | undefined;
 
 function TopTracks() {
   const [tracksData, setTracksData] = useState<Tracks | undefined>();
@@ -187,7 +187,7 @@ function TopTracks() {
       await sdk.playlists.removeItemsFromPlaylist(pId, {
         tracks: [{ uri: uri }],
       });
-      const playlistData = cloneDeep(tracksData) as PlaylistedTracks;
+      const playlistData = cloneDeep(tracksData) as PlaylistTracks;
       const filteredTracks = playlistData.playlist.tracks.items.filter(
         (track) => track.track.uri !== uri
       );
@@ -294,14 +294,18 @@ function TopTracks() {
                       >
                         {track.track.name}
                       </h3>
-                      <p
-                        className="text-gray-500 cursor-pointer hover:underline"
-                        onClick={() =>
-                          router.push(`/artists/${track.track.artists[0].id}`)
-                        }
-                      >
-                        {track.track.artists[0].name}
-                      </p>
+                      <div className="flex flex-row space-x-1">
+                        {track.track.artists.map((artist, i) => (
+                          <p
+                            key={artist.id}
+                            className="text-gray-500 cursor-pointer hover:underline"
+                            onClick={() => router.push(`/artist/${artist.id}`)}
+                          >
+                            {artist.name}
+                            {i < track.track.artists.length - 1 && ", "}
+                          </p>
+                        ))}
+                      </div>
                     </div>
                   </div>
                   <DropdownMenu>
