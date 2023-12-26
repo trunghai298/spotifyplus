@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "../../lib/redux/hooks";
 import { useRouter } from "next/navigation";
 import sdk from "../../lib/spotify-sdk/ClientInstance";
 import Container from "../components/core/Container";
-import { debounce, map, set } from "lodash";
+import { debounce, map, omit, set } from "lodash";
 import { AudioFeatures, Playlist, Track } from "@spotify/web-api-ts-sdk";
 import { setTrack } from "../../lib/redux/slices/playerSlices";
 import Tooltip from "../components/Tooltip";
@@ -51,6 +51,7 @@ function SongSymmetry() {
     fetchNext: false,
     nextTrackId: "",
   });
+  const [audioFeatures, setAudioFeatures] = useState<AudioFeatures>();
 
   const playlistTop = useAppSelector((state) => state.playlist.playlist);
   const topTracksRecomend = map(
@@ -153,6 +154,19 @@ function SongSymmetry() {
           sdk.tracks.get(recommendationState.nextTrackId),
           sdk.tracks.audioFeatures(recommendationState.nextTrackId),
         ]);
+        setAudioFeatures(
+          omit(audioFeatures, [
+            "id",
+            "uri",
+            "track_href",
+            "type",
+            "analysis_url",
+            "duration_ms",
+            "mode",
+            "time_signature",
+            "key",
+          ]) as any
+        );
         onGetRecommendation(track, audioFeatures);
       } catch (error: any) {}
     })();
@@ -208,12 +222,27 @@ function SongSymmetry() {
                 <h3 className="text-xl font-bold text-spotify-green-dark flex">
                   Songs Similar to
                 </h3>
-                <h1 className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-bold sm:font-extrabold text-white">
-                  {songRecommendation.source.name}
-                </h1>
-                <h2 className="text-md font-medium text-white overflow-hidden text-ellipsis">
-                  by {songRecommendation.source.artists[0].name}
-                </h2>
+                <div className="flex flex-tow items-start justify-start space-x-2">
+                  <h1 className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl font-bold sm:font-extrabold text-white">
+                    {songRecommendation.source.name}
+                  </h1>
+                  {songRecommendation.source.explicit && (
+                    <i className="bi bi-explicit-fill" />
+                  )}
+                </div>
+                <div className="flex flex-row space-x-1">
+                  by &nbsp;
+                  {songRecommendation.source.artists.map((artist, i) => (
+                    <h2
+                      key={artist.id}
+                      className="text-md font-bold text-white overflow-hidden text-ellipsis hover:underline cursor-pointer"
+                      onClick={() => router.push(`/artist/${artist.id}`)}
+                    >
+                      {artist.name}
+                      {i < songRecommendation.source.artists.length - 1 && ", "}
+                    </h2>
+                  ))}
+                </div>
               </div>
             </div>
             <div className="w-50 sm:w-100 md:w-100 lg:w-100 flex flex-row justify-end">
@@ -246,12 +275,26 @@ function SongSymmetry() {
                     alt=""
                   />
                   <div className="flex flex-col grow space-y-1">
-                    <h2 className="text-lg font-bold text-white">
-                      {track.name}
-                    </h2>
-                    <h2 className="text-md font-normal text-white overflow-hidden text-ellipsis">
-                      {track.artists[0].name}
-                    </h2>
+                    <div className="w-full flex flex-row space-x-1 overflow-hidden text-ellipsis">
+                      <h2 className="text-md sm:text-lg font-bold text-white">
+                        {track.name}
+                      </h2>
+                      {track.explicit && (
+                        <i className="bi bi-explicit-fill text-sm" />
+                      )}
+                    </div>
+                    <div className="flex flex-row space-x-1">
+                      {track.artists.map((artist, i) => (
+                        <h2
+                          key={artist.id}
+                          className="text-md font-normal text-white overflow-hidden text-ellipsis hover:underline cursor-pointer"
+                          onClick={() => router.push(`/artist/${artist.id}`)}
+                        >
+                          {artist.name}
+                          {i < track.artists.length - 1 && ", "}
+                        </h2>
+                      ))}
+                    </div>
                   </div>
                   <Tooltip text="Get Similar Songs">
                     <i

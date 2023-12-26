@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/components/ui/use-toast";
 import { Button } from "@/components/ui/button";
+import Tooltip from "../components/Tooltip";
 
 type AlbumTracks = {
   type: "album";
@@ -107,14 +108,6 @@ function TopTracks() {
                   {album.name}
                 </h2>
                 <div className="flex items-center justify-between space-x-4">
-                  <h3
-                    className="text-white text-xs sm:text-sm md:text-md font-medium cursor-pointer hover:underline"
-                    onClick={() =>
-                      router.push(`/artists/${album.artists[0].id}`)
-                    }
-                  >
-                    {album.artists[0].name}
-                  </h3>
                   <h3 className="text-gray-400 text-xs sm:text-sm md:text-md font-normal">
                     {album.release_date}
                   </h3>
@@ -160,18 +153,26 @@ function TopTracks() {
                     </h3>
                   </div>
                   <div className="flex items-center justify-between">
-                    <p
-                      className="text-gray-500 cursor-pointer hover:underline"
-                      onClick={() =>
-                        router.push(`/artists/${track.artists[0].id}`)
-                      }
-                    >
-                      {track.artists[0].name}
-                    </p>
-                    <i
-                      className="bi bi-play-circle text-gray-500"
-                      onClick={() => onClickTrack(track)}
-                    />
+                    <div className="flex flex-row space-x-1">
+                      {track.artists.map((artist, i) => (
+                        <p
+                          key={artist.id}
+                          className="text-gray-500 cursor-pointer hover:underline"
+                          onClick={() => router.push(`/artist/${artist.id}`)}
+                        >
+                          {artist.name}
+                          {i < track.artists.length - 1 && ", "}
+                        </p>
+                      ))}
+                    </div>
+                    <Tooltip text="Find similar songs">
+                      <i
+                        className="bi bi-search text-xl"
+                        onClick={() => {
+                          router.push(`/song-symmetry?trackId=${track.id}`);
+                        }}
+                      />
+                    </Tooltip>
                   </div>
                 </div>
               ))}
@@ -288,12 +289,17 @@ function TopTracks() {
                       loading="lazy"
                     />
                     <div>
-                      <h3
-                        className="text-lg font-bold cursor-pointer hover:underline"
-                        onClick={() => onClickTrack(track.track)}
-                      >
-                        {track.track.name}
-                      </h3>
+                      <div className="flex flex-row space-x-1 sm:space-x-2">
+                        <h3
+                          className="text-lg font-bold cursor-pointer hover:underline"
+                          onClick={() => onClickTrack(track.track)}
+                        >
+                          {track.track.name}
+                        </h3>
+                        {track.track.explicit && (
+                          <i className="bi bi-explicit-fill text-sm" />
+                        )}
+                      </div>
                       <div className="flex flex-row space-x-1">
                         {track.track.artists.map((artist, i) => (
                           <p

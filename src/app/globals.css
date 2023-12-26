@@ -27,7 +27,9 @@ body {
     rgb(var(--background-start-rgb));
   font-family: 'Poppins, "Poppins", Helvetica, sans-serif;';
 }
-
+i {
+  cursor: pointer;
+}
 dialog::backdrop {
   background-color: rgba(0, 0, 0, 0.64);
 }
