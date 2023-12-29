@@ -27,6 +27,9 @@ body {
     rgb(var(--background-start-rgb));
   font-family: 'Poppins, "Poppins", Helvetica, sans-serif;';
 }
+::-webkit-scrollbar {
+  display: none;
+}
 i {
   cursor: pointer;
 }

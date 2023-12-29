@@ -63,6 +63,10 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
   useEffect(() => {
     if (!dragging) {
       const player = ref.current;
+      if (player && player.offsetTop > window.innerHeight - 100) {
+        player.style.setProperty("bottom", "0");
+        player.style.setProperty("top", "unset");
+      }
       if (player && player.offsetLeft < 0) {
         player.style.setProperty("left", "0");
         player.style.setProperty("right", "unset");
@@ -78,20 +82,15 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
         player.style.setProperty("right", "0");
         player.style.setProperty("left", "unset");
       }
-      if (minimized) {
-        if (player && player.offsetLeft > window.innerWidth / 2) {
-          player?.style.setProperty("right", "0");
-          player?.style.setProperty("left", "unset");
-        } else {
-          player?.style.setProperty("left", "0");
-          player?.style.setProperty("right", "unset");
-        }
+      if (player && player.offsetLeft > window.innerWidth / 2) {
+        player?.style.setProperty("right", "0");
+        player?.style.setProperty("left", "unset");
       } else {
-        player?.style.setProperty("top", "unset");
-        player?.style.setProperty("bottom", "4rem");
+        player?.style.setProperty("left", "0");
+        player?.style.setProperty("right", "unset");
       }
     }
-  }, [dragging, minimized, size]);
+  }, [dragging, size]);
 
   if (state === "closed") return null;
 

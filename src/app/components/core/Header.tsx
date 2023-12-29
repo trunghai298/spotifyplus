@@ -1,9 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
 "use client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import React from "react";
+import Logo from "../../../assets/logo2.webp";
 
 export const Header = () => {
   const router = useRouter();
@@ -14,15 +14,13 @@ export const Header = () => {
   if (session.status === "unauthenticated") return null;
 
   return (
-    <header className="sticky -top-[1px] w-full p-2 sm:px-10 bg-gray-900 z-50 flex justify-between items-center">
+    <header className="sticky -top-[1px] w-full p-4 sm:px-10 bg-gray-900 z-50 flex justify-between items-center">
       <nav className="flex flex-wrap w-full items-center justify-between sm:space-x-4">
-        <div className="flex gap-x-1 items-center">
-          <a
-            className="text-2xl font-bold text-white cursor-pointer"
-            onClick={() => router.push("/")}
-          >
-            Song Symmetry
-          </a>
+        <div
+          className="flex gap-x-1 items-center"
+          onClick={() => router.push("/")}
+        >
+          <img src={Logo.src} alt="logo" width={30} height={30} />
         </div>
         <div
           className="cursor-pointer sm:hidden block"
@@ -42,12 +40,6 @@ export const Header = () => {
           id="menu"
         >
           <ul className="pt-4 text-base text-white flex flex-col sm:flex-row m-0 justify-between items-center space-y-2 sm:space-y-0 sm:space-x-4 md:pt-0">
-            <a
-              className="text-lg font-medium hover:text-spotify-green hover:underline cursor-pointer"
-              onClick={() => router.push("/song-symmetry")}
-            >
-              Song Symmetry
-            </a>
             <a
               className="text-lg font-medium hover:text-spotify-green hover:underline cursor-pointer"
               onClick={() => router.push("/wrapped")}

@@ -169,7 +169,7 @@ function TopTracks() {
                       <i
                         className="bi bi-search text-xl"
                         onClick={() => {
-                          router.push(`/song-symmetry?trackId=${track.id}`);
+                          router.push(`/?trackId=${track.id}`);
                         }}
                       />
                     </Tooltip>
@@ -233,7 +233,7 @@ function TopTracks() {
                     <h3
                       className="text-white text-xs sm:text-sm md:text-md font-medium cursor-pointer hover:underline"
                       onClick={() =>
-                        router.push(`/artists/${playlist.owner.id}`)
+                        router.push(`/artist/${playlist.owner.id}`)
                       }
                     >
                       {playlist.owner.display_name}
@@ -324,9 +324,7 @@ function TopTracks() {
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          router.push(
-                            `/song-symmetry?trackId=${track.track.id}`
-                          );
+                          router.push(`/?trackId=${track.track.id}`);
                         }}
                       >
                         <i className="bi bi-search text-xl" />

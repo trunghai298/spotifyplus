@@ -101,6 +101,9 @@ module.exports = {
       zIndex: {
         max: "9999",
       },
+      lineClamp: {
+        7: "7",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

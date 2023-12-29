@@ -47,7 +47,7 @@ function TracksGrid(props: TracksGridProps) {
           </h3>
           <p
             className="text-gray-500 cursor-pointer hover:underline"
-            onClick={() => router.push(`/artists/${track.artists[0].id}`)}
+            onClick={() => router.push(`/artist/${track.artists[0].id}`)}
           >
             {track.artists[0].name}
           </p>

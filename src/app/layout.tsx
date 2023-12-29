@@ -3,7 +3,6 @@ import "./globals.css";
 import { getServerSession } from "next-auth";
 import { Inter } from "next/font/google";
 import AuthSessionProvider from "./components/AuthSessionProvider";
-import { ClerkProvider } from "@clerk/nextjs";
 import { Header } from "./components/core/Header";
 import { EmbedPlayer } from "./components/core/EmbedPlayer";
 import { Providers } from "../lib/redux/providers";
@@ -24,20 +23,16 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <AuthSessionProvider session={session}>
-        <ClerkProvider>
-          <body
-            className={`${inter.className} h-full min-h-screen bg-gray-900`}
-          >
-            <Providers>
-              <SubscribeDialog />
-              <EmbedPlayer />
-              <Toaster />
-              <Header />
-              {children}
-              {session && <Footer />}
-            </Providers>
-          </body>
-        </ClerkProvider>
+        <body className={`${inter.className} h-full min-h-screen bg-gray-900`}>
+          <Providers>
+            <SubscribeDialog />
+            <EmbedPlayer />
+            <Toaster />
+            <Header />
+            {children}
+            {session && <Footer />}
+          </Providers>
+        </body>
       </AuthSessionProvider>
     </html>
   );

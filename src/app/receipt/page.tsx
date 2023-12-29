@@ -525,7 +525,7 @@ function Receiptify() {
     <Container>
       <div className="w-full h-full flex flex-col justify-center items-center">
         <div className="w-full h-full flex flex-col space-y-6 space-x-0 sm:flex-row sm:space-y-0 sm:space-x-6 justify-between mt-12">
-          <div className="w-full h-full max-w-full sm:max-w-[70%] flex flex-col items-start">
+          <div className="w-full h-full max-w-full sm:w-[60%] flex flex-col items-start">
             <h1 className="text-3xl font-bold text-white">
               {step === 0
                 ? "Choose a style that you like"
@@ -547,7 +547,7 @@ function Receiptify() {
               </Button>
             </div>
           </div>
-          <div className="w-auto h-auto grow flex flex-col items-start">
+          <div className="w-[40%] h-auto grow flex flex-col items-start">
             <h1 className="text-3xl font-bold text-white">Preview</h1>
             <div className="w-full h-auto min-h-[700px] rounded-lg flex justify-end">
               {renderPreview()}

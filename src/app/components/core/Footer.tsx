@@ -2,7 +2,7 @@ import Link from "next/link";
 
 function Footer() {
   return (
-    <footer className="w-full bg-transparent text-white p-8">
+    <footer className="w-full bg-transparent text-white p-6 sm:p-8">
       <div className="container flex flex-col md:flex-row items-center justify-center gap-6">
         <div className="flex space-x-4">
           <Link

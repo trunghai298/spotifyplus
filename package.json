@@ -24,6 +24,7 @@
     "bootstrap-icons": "^1.11.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
+    "genius-lyrics": "^4.4.6",
     "html-to-image": "^1.11.11",
     "lodash": "^4.17.21",
     "lucide-react": "^0.294.0",
