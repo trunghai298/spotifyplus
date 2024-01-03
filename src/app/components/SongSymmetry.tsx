@@ -1,8 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React, { use, useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../lib/redux/hooks";
+import React, { useEffect, useState } from "react";
+import { useAppDispatch } from "../../lib/redux/hooks";
 import { useRouter } from "next/navigation";
 import sdk from "../../lib/spotify-sdk/ClientInstance";
 import Container from "../components/core/Container";
@@ -186,7 +186,19 @@ function SongSymmetry() {
           ])
         );
         onGetRecommendation(track, audioFeatures);
-      } catch (error: any) {}
+      } catch (error: any) {
+        if (error.message.includes("exceeded its rate limits")) {
+          toast({
+            title: "Rate limit exceeded!",
+            description: "Please try again later.",
+          });
+          setRecommendationState({
+            fetching: false,
+            fetchNext: false,
+            nextTrackId: "",
+          });
+        }
+      }
     })();
   }, [recommendationState.nextTrackId]);
 
@@ -247,230 +259,294 @@ function SongSymmetry() {
 
   const debountSearch = debounce(onSearchTrack, 1000);
 
-  const renderRecommendations = () => {
-    if (recommendationState.fetching) return <Loader />;
+  const backAction = () => {
+    return (
+      <div className="w-full flex flex-row justify-start items-center">
+        <i
+          className="bi bi-arrow-left text-white text-left text-2xl cursor-pointer"
+          onClick={() => {
+            setSongRecommendation(undefined);
+            setSongLyrics("");
+          }}
+        />
+      </div>
+    );
+  };
+  const renderSongDetails = () => {
     if (!songRecommendation) return null;
     return (
       <div className="w-full flex flex-col space-y-8 justify-center items-center">
-        <div className="w-full flex flex-row justify-start items-center">
-          <i
-            className="bi bi-arrow-left text-white text-left text-2xl cursor-pointer"
-            onClick={() => {
-              setSongRecommendation(undefined);
-              setSongLyrics("");
-            }}
-          />
-        </div>
-        <div className="w-full flex flex-col space-y-8 justify-center items-center">
-          <div className="w-full flex flex-col space-y-3 md:flex-row md:space-x-4 justify-start md:items-end">
-            <div className="h-[200px] sm:h-[350px] flex flex-row items-start justify-between space-x-2 sm:space-x-4 md:space-x-6 p-6 rounded-xl bg-gray-900 overflow-hidden">
-              <div className="flex flex-col space-y-2 sm:space-y-4 w-[100px] sm:w-[150px] md:w-[200px] lg:w-[220px]">
-                <div className="relative h-full">
-                  <img
-                    src={songRecommendation.source.album.images[0].url}
-                    alt=""
-                    className="object-contain rounded-md w-full h-full"
-                  />
-                  <div
-                    className={`h-full w-full absolute top-0 left-0 flex justify-center items-center opacity-0 hover:opacity-100 cursor-pointer`}
-                    onClick={() =>
-                      dispatch(setTrack(songRecommendation.source))
-                    }
-                  >
-                    <i className="bi bi-play-circle-fill text-gray-300 text-4xl"></i>
-                  </div>
+        <div className="w-full flex flex-col space-y-3 md:flex-row md:space-x-4 justify-start md:items-end">
+          <div className="h-[200px] sm:h-[350px] flex flex-row items-start justify-between space-x-2 sm:space-x-4 md:space-x-6 p-6 rounded-xl bg-gray-900 overflow-hidden">
+            <div className="flex flex-col space-y-2 sm:space-y-4 w-[100px] sm:w-[150px] md:w-[200px] lg:w-[220px]">
+              <div className="relative h-full">
+                <img
+                  src={songRecommendation.source.album.images[0].url}
+                  alt=""
+                  className="object-contain rounded-md w-full h-full"
+                />
+                <div
+                  className={`h-full w-full absolute top-0 left-0 flex justify-center items-center opacity-0 hover:opacity-100 cursor-pointer`}
+                  onClick={() => dispatch(setTrack(songRecommendation.source))}
+                >
+                  <i className="bi bi-play-circle-fill text-gray-300 text-4xl"></i>
                 </div>
-                <div className="flex flex-col space-y-1">
-                  <div className="w-full flex flex-tow items-start justify-start space-x-2">
-                    <h1 className="w-full line-clamp-1 text-lg sm:text-2xl md:text-3xl font-bold sm:font-extrabold text-white">
+              </div>
+              <div className="flex flex-col space-y-1">
+                <div className="w-full flex flex-tow items-start justify-start space-x-2">
+                  <h1 className="w-full line-clamp-1 text-lg sm:text-2xl md:text-3xl font-bold sm:font-extrabold text-white">
+                    {songRecommendation.source.name}
+                  </h1>
+                  {songRecommendation.source.explicit && (
+                    <i className="bi bi-explicit-fill" />
+                  )}
+                </div>
+                <div className="flex flex-row items-center space-x-1">
+                  <h2
+                    className="w-full text-md font-bold text-white overflow-hidden text-ellipsis cursor-pointer hover:underline"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      router.push(
+                        `/artist/${songRecommendation.source.artists[0].id}`
+                      );
+                    }}
+                  >
+                    {songRecommendation.source.artists
+                      .map((artist) => artist.name)
+                      .join(", ")}
+                  </h2>
+                </div>
+              </div>
+            </div>
+            <div className="w-auto h-full overflow-hidden text-ellipsis">
+              <h3 className="text-md text-left font-bold text-gray-300">
+                Lyrics
+              </h3>
+              <div className="h-[50%] sm:h-[80%] p-y-2 overflow-hidden text-ellipsis">
+                {songLyrics === "loading" ? (
+                  <h4 className="text-sm text-left font-thin text-gray-400">
+                    Loading...
+                  </h4>
+                ) : (
+                  <p className="text-sm text-left font-thin overflow-hidden text-ellipsis whitespace-pre-line text-gray-400">
+                    {songLyrics}
+                  </p>
+                )}
+              </div>
+              <Dialog>
+                {songLyrics !== "loading" &&
+                  songLyrics !== "failed" &&
+                  songLyrics !== "not found" && (
+                    <DialogTrigger asChild>
+                      <h3 className="text-white mt-4 text-sm font-bold underline cursor-pointer">
+                        Show Full Lyrics
+                      </h3>
+                    </DialogTrigger>
+                  )}
+                <DialogContent className="h-[80%] rounded-3xl border-none p-2 sm:p-8 bg-gray-700">
+                  <DialogHeader className="sticky top-0">
+                    <DialogTitle className="text-xl sm:text-2xl font-bold">
                       {songRecommendation.source.name}
-                    </h1>
-                    {songRecommendation.source.explicit && (
-                      <i className="bi bi-explicit-fill" />
-                    )}
-                  </div>
-                  <div className="flex flex-row items-center space-x-1">
-                    <h2
-                      className="w-full text-md font-bold text-white overflow-hidden text-ellipsis cursor-pointer hover:underline"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        router.push(
-                          `/artist/${songRecommendation.source.artists[0].id}`
-                        );
-                      }}
-                    >
+                    </DialogTitle>
+                    <DialogDescription className="text-lg font-normal">
                       {songRecommendation.source.artists
                         .map((artist) => artist.name)
                         .join(", ")}
-                    </h2>
-                  </div>
-                </div>
-              </div>
-              <div className="w-auto h-full overflow-hidden text-ellipsis">
-                <h3 className="text-md text-left font-bold text-gray-300">
-                  Lyrics
-                </h3>
-                <div className="h-[50%] sm:h-[80%] p-y-2 overflow-hidden text-ellipsis">
-                  {songLyrics === "loading" ? (
-                    <h4 className="text-sm text-left font-thin text-gray-400">
-                      Loading...
-                    </h4>
-                  ) : (
-                    <p className="text-sm text-left font-thin overflow-hidden text-ellipsis whitespace-pre-line text-gray-400">
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="p-6 overflow-y-scroll">
+                    <p className="text-md text-left font-light whitespace-pre-line text-gray-200">
                       {songLyrics}
                     </p>
-                  )}
-                </div>
-                <Dialog>
-                  {songLyrics !== "loading" &&
-                    songLyrics !== "failed" &&
-                    songLyrics !== "not found" && (
-                      <DialogTrigger asChild>
-                        <h3 className="text-white mt-4 text-sm font-bold underline cursor-pointer">
-                          Show Full Lyrics
-                        </h3>
-                      </DialogTrigger>
-                    )}
-                  <DialogContent className="h-[80%] rounded-3xl border-none p-2 sm:p-8 bg-gray-700">
-                    <DialogHeader className="sticky top-0">
-                      <DialogTitle className="text-xl sm:text-2xl font-bold">
-                        {songRecommendation.source.name}
-                      </DialogTitle>
-                      <DialogDescription className="text-lg font-normal">
-                        {songRecommendation.source.artists
-                          .map((artist) => artist.name)
-                          .join(", ")}
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="p-6 overflow-y-scroll">
-                      <p className="text-md text-left font-light whitespace-pre-line text-gray-200">
-                        {songLyrics}
-                      </p>
-                    </div>
-                    <DialogFooter>
-                      <h3 className="text-white text-sm font-bold text-center">
-                        Lyrics provided by{" "}
-                        <a
-                          className="underline"
-                          href="https://genius-lyrics.js.org/"
-                          target="_blank"
-                        >
-                          Genius
-                        </a>
-                      </h3>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              </div>
-            </div>
-            <div className="sm:h-[350px] flex flex-col grow space-y-6 items-start justify-between p-6 rounded-xl bg-gray-900">
-              <h3 className="text-md text-left font-bold text-gray-300">
-                Audio Features
-              </h3>
-              <div className="w-full flex flex-row space-x-4 items-center justify-between">
-                {Object.keys(audioFeatures).map((key: string) => (
-                  <div
-                    className="flex flex-col space-y-2 items-center overflow-x-hidden"
-                    key={key}
-                  >
-                    <div className="w-[2px] h-[50px] sm:w-[10px] sm:h-[230px] bg-[#343434] rounded-md relative">
-                      <div
-                        className={`w-[4px] sm:w-[15px] bg-[#dcf689] rounded-md absolute bottom-0 left-2/4 -translate-x-1/2`}
-                        style={{ height: `${getFeatureHeight(key)}%` }}
-                      ></div>
-                    </div>
-                    <h4 className="w-full text-xs text-left font-light overflow-hidden sm:font-normal text-gray-400 text-ellipsis">
-                      {key}
-                    </h4>
                   </div>
-                ))}
-              </div>
+                  <DialogFooter>
+                    <h3 className="text-white text-sm font-bold text-center">
+                      Lyrics provided by{" "}
+                      <a
+                        className="underline"
+                        href="https://genius-lyrics.js.org/"
+                        target="_blank"
+                      >
+                        Genius
+                      </a>
+                    </h3>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
-        </div>
-        <div className="w-full flex flex-col space-y-8 p-8 rounded-xl bg-gray-900">
-          <div className="w-full flex flex-col space-y-2 sm:flex-row justify-between items-center">
-            <h3 className="text-xl sm:text-3xl text-left font-bold text-spotify-green-dark flex">
-              Songs Have Similar Vibes
+          <div className="sm:h-[350px] flex flex-col grow space-y-6 items-start justify-between p-6 rounded-xl bg-gray-900">
+            <h3 className="text-md text-left font-bold text-gray-300">
+              Audio Features
             </h3>
-            <Button
-              size={"lg"}
-              className="flex items-center flex-row justify-center sm:justify-between space-x-2  bg-spotify-green-dark hover:bg-spotify-green-light disabled:bg-spotify-green-dark rounded-3xl"
-              onClick={onSavePlaylist}
-              disabled={playlist.state === "loading"}
-            >
-              <i className="bi bi-spotify text-white text-2xl" />
-              <h3 className="text-white text-sm font-bold uppercase">
-                {playlist.state === "loading" ? "Saving..." : "Save Playlist"}
-              </h3>
-            </Button>
-          </div>
-          <div className="w-full rounded-sm flex flex-col space-y-4">
-            {songRecommendation?.recommendation.tracks.map((track) => {
-              const artists = track.artists.map((artist) => artist.name);
-              return (
-                <div className="w-full flex flex-col" key={track.id}>
-                  <div className="w-full flex flex-row space-x-4 justify-start items-center rounded-md cursor-pointer">
-                    <img
-                      width={100}
-                      height={100}
-                      className="w-[40px] h-[40px] object-contain rounded-lg"
-                      src={track.album.images[0].url}
-                      alt=""
-                    />
-                    <div className="flex flex-col grow space-y-1">
-                      <div className="flex flex-row space-x-1 overflow-hidden text-ellipsis">
-                        <h2 className="text-md sm:text-lg line-clamp-1 font-bold text-white">
-                          {track.name}
-                        </h2>
-                        {track.explicit && (
-                          <i className="bi bi-explicit-fill text-sm" />
-                        )}
-                      </div>
-                      <div className="flex flex-row space-x-1">
-                        <h2
-                          className="text-md font-normal text-white overflow-hidden text-ellipsis cursor-pointer hover:underline"
-                          onClick={() =>
-                            router.push(`/artist/${track.artists[0].id}`)
-                          }
-                        >
-                          {artists.join(", ")}
-                        </h2>
-                      </div>
-                    </div>
-                    <Tooltip text="Get Similar Songs">
-                      <i
-                        className="bi bi-search text-white text-xl"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          router.replace(`?trackId=${track.id}`);
-                          setRecommendationState({
-                            fetching: false,
-                            fetchNext: true,
-                            nextTrackId: track.id,
-                          });
-                          setSongLyrics("loading");
-                        }}
-                      />
-                    </Tooltip>
-                    <i className="bi bi-play-circle-fill text-white text-2xl" />
+            <div className="w-full flex flex-row space-x-4 items-center justify-between">
+              {Object.keys(audioFeatures).map((key: string) => (
+                <div
+                  className="flex flex-col space-y-2 items-center overflow-x-hidden"
+                  key={key}
+                >
+                  <div className="w-[2px] h-[50px] sm:w-[10px] sm:h-[230px] bg-[#343434] rounded-md relative">
+                    <div
+                      className={`w-[4px] sm:w-[15px] bg-[#dcf689] rounded-md absolute bottom-0 left-2/4 -translate-x-1/2`}
+                      style={{ height: `${getFeatureHeight(key)}%` }}
+                    ></div>
                   </div>
+                  <h4 className="w-full text-xs text-left font-light overflow-hidden sm:font-normal text-gray-400 text-ellipsis">
+                    {key}
+                  </h4>
                 </div>
-              );
-            })}
-          </div>
-          <div className="w-full flex flex-row space-x-4 justify-center items-center">
-            <Button
-              onClick={() => dispatch(setOpenSubscribeDialog())}
-              variant="outline"
-              className="w-full sm:w-[400px] p-6 sm:p-8 text-xl sm:text-2xl font-bold text-spotify-green hover:text-spotify-green-light"
-            >
-              Want More Songs Like This?
-            </Button>
+              ))}
+            </div>
           </div>
         </div>
+      </div>
+    );
+  };
+  const renderSongSimilarity = () => {
+    return (
+      <div className="w-full flex flex-col space-y-8 p-8 rounded-xl bg-gray-900">
+        <div className="w-full flex flex-col space-y-2 sm:flex-row justify-between items-center">
+          <h3 className="text-xl sm:text-3xl text-left font-bold text-spotify-green-dark flex">
+            Songs Have Similar Vibes
+          </h3>
+          <Button
+            size={"lg"}
+            className="flex items-center flex-row justify-center sm:justify-between space-x-2  bg-spotify-green-dark hover:bg-spotify-green-light disabled:bg-spotify-green-dark rounded-3xl"
+            onClick={onSavePlaylist}
+            disabled={playlist.state === "loading"}
+          >
+            <i className="bi bi-spotify text-white text-2xl" />
+            <h3 className="text-white text-sm font-bold uppercase">
+              {playlist.state === "loading" ? "Saving..." : "Save Playlist"}
+            </h3>
+          </Button>
+        </div>
+        <div className="w-full rounded-sm flex flex-col space-y-4">
+          {songRecommendation?.recommendation.tracks.map((track) => {
+            const artists = track.artists.map((artist) => artist.name);
+
+            return (
+              <div className="w-full flex flex-col" key={track.id}>
+                <div className="w-full flex flex-row space-x-4 justify-start items-center rounded-md cursor-pointer">
+                  <img
+                    width={100}
+                    height={100}
+                    className="w-[40px] h-[40px] object-contain rounded-lg"
+                    src={track.album.images[0].url}
+                    alt=""
+                  />
+                  <div className="flex flex-col grow space-y-1">
+                    <div className="flex flex-row space-x-1 overflow-hidden text-ellipsis">
+                      <h2 className="text-md sm:text-lg line-clamp-1 font-bold text-white">
+                        {track.name}
+                      </h2>
+                      {track.explicit && (
+                        <i className="bi bi-explicit-fill text-sm" />
+                      )}
+                    </div>
+                    <div className="flex flex-row space-x-1">
+                      <h2
+                        className="text-md font-normal text-white overflow-hidden text-ellipsis cursor-pointer hover:underline"
+                        onClick={() =>
+                          router.push(`/artist/${track.artists[0].id}`)
+                        }
+                      >
+                        {artists.join(", ")}
+                      </h2>
+                    </div>
+                  </div>
+                  <div className="flex flex-row space-x-1 items-center">
+                    <h3 className="text-md font-bold text-white">
+                      {/* Similarity: {calculateCosineSimilarity(track)} */}
+                    </h3>
+                  </div>
+                  <Tooltip text="Get Similar Songs">
+                    <i
+                      className="bi bi-search text-white text-xl"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.replace(`?trackId=${track.id}`);
+                        setRecommendationState({
+                          fetching: false,
+                          fetchNext: true,
+                          nextTrackId: track.id,
+                        });
+                        setSongLyrics("loading");
+                      }}
+                    />
+                  </Tooltip>
+                  <i
+                    className="bi bi-play-circle-fill text-white text-2xl"
+                    onClick={() => dispatch(setTrack(track))}
+                  />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div className="w-full flex flex-row space-x-4 justify-center items-center">
+          <Button
+            onClick={() => dispatch(setOpenSubscribeDialog())}
+            variant="outline"
+            className="w-full sm:w-[400px] p-6 sm:p-8 text-xl sm:text-2xl font-bold text-spotify-green hover:text-spotify-green-light"
+          >
+            Want More Songs Like This?
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+  const calculateCosineSimilarity = async (targetSong: Track) => {
+    const targetSongFeatures = await sdk.tracks.audioFeatures(targetSong.id);
+    const targetSongFeaturesNormalized: IAudioFeatures = omit(
+      targetSongFeatures,
+      [
+        "id",
+        "uri",
+        "track_href",
+        "type",
+        "analysis_url",
+        "duration_ms",
+        "mode",
+        "time_signature",
+        "key",
+        "tempo",
+        "loudness",
+        "instrumentalness",
+      ]
+    );
+    let dotProduct = 0;
+    let normA = 0;
+    let normB = 0;
+
+    for (const key in audioFeatures) {
+      if (targetSongFeaturesNormalized.hasOwnProperty(key)) {
+        dotProduct += audioFeatures[key] * targetSongFeaturesNormalized[key];
+        normA += audioFeatures[key] ** 2;
+        normB += targetSongFeaturesNormalized[key] ** 2;
+      }
+    }
+
+    normA = Math.sqrt(normA);
+    normB = Math.sqrt(normB);
+
+    if (normA === 0 || normB === 0) {
+      return 0; // Avoid division by zero
+    }
+
+    return dotProduct / (normA * normB);
+  };
+
+  const renderRecommendations = () => {
+    if (recommendationState.fetching) return <Loader />;
+    return (
+      <div className="w-full flex flex-col space-y-8 justify-center items-center">
+        {backAction()}
+        {renderSongDetails()}
+        {renderSongSimilarity()}
       </div>
     );
   };
