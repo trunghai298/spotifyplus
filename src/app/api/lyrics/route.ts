@@ -20,8 +20,7 @@ export const GET = async (req: Request, res: Response) => {
       releaseDate: song?.releasedAt,
       image: song?.image,
     });
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json({ status: 404, error: "Lyrics not found" });
+  } catch (error: any) {
+    return NextResponse.json({ status: 404, error: error.message });
   }
 };
