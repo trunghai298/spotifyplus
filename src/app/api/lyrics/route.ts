@@ -21,6 +21,7 @@ export const GET = async (req: Request, res: Response) => {
       image: song?.image,
     });
   } catch (error) {
+    console.log(error);
     return NextResponse.json({ status: 404, error: "Lyrics not found" });
   }
 };
