@@ -333,7 +333,7 @@ function SongSymmetry() {
                       </h3>
                     </DialogTrigger>
                   )}
-                <DialogContent className="h-[80%] rounded-3xl border-none p-2 sm:p-8 bg-gray-700">
+                <DialogContent className="h-[80%] sm:max-w-[28rem] rounded-3xl border-none p-2 sm:p-8 bg-gray-700">
                   <DialogHeader className="sticky top-0">
                     <DialogTitle className="text-xl sm:text-2xl font-bold">
                       {songRecommendation.source.name}
