@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { AppDispatch } from "../store";
-import { Album, Playlist, Track } from "@spotify/web-api-ts-sdk";
+import { Album, PlaybackState, Playlist, Track } from "@spotify/web-api-ts-sdk";
 
 interface IPlayer {
   state: "open" | "closed";
@@ -8,6 +8,7 @@ interface IPlayer {
   type: "single" | "playlist" | "album";
   size: "compact" | "full";
   src: string;
+  currentTrack: Track | undefined;
 }
 
 export const playerSlice = createSlice({
@@ -19,6 +20,12 @@ export const playerSlice = createSlice({
     size: "compact",
   } as IPlayer,
   reducers: {
+    setCurrentTrack: (
+      state,
+      action: PayloadAction<{ currentTrack: Track | undefined }>
+    ) => {
+      state.currentTrack = action.payload.currentTrack;
+    },
     setTrack: (state, action: PayloadAction<{ track: Track | undefined }>) => {
       state.state = "open";
       state.track = action.payload.track;
@@ -63,6 +70,7 @@ const {
   setAlbum: setAlbumAction,
   closePlayer: closePlayerAction,
   expandPlayer: expandPlayerAction,
+  setCurrentTrack: setCurrentTrackAction,
 } = playerSlice.actions;
 
 export const setTrack =
@@ -87,5 +95,10 @@ export const closePlayer = () => async (dispatch: AppDispatch) => {
 export const expandPlayer = () => async (dispatch: AppDispatch) => {
   dispatch(expandPlayerAction());
 };
+
+export const setCurrentTrack =
+  (currentTrack: Track) => async (dispatch: AppDispatch) => {
+    dispatch(setCurrentTrackAction({ currentTrack }));
+  };
 
 export default playerSlice.reducer;

@@ -2,13 +2,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useAppDispatch } from "../../lib/redux/hooks";
+import { useAppDispatch, useAppSelector } from "../../lib/redux/hooks";
 import { useRouter } from "next/navigation";
 import sdk from "../../lib/spotify-sdk/ClientInstance";
 import Container from "../components/core/Container";
 import { debounce, map, omit, set } from "lodash";
 import { AudioFeatures, Page, Playlist, Track } from "@spotify/web-api-ts-sdk";
-import { setTrack } from "../../lib/redux/slices/playerSlices";
+import { setCurrentTrack, setTrack } from "../../lib/redux/slices/playerSlices";
 import Tooltip from "../components/Tooltip";
 import { Button } from "@/components/ui/button";
 import {
@@ -72,6 +72,8 @@ function SongSymmetry() {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { toast } = useToast();
+
+  const { currentTrack } = useAppSelector((state) => state.player);
 
   const onQueryChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -246,6 +248,17 @@ function SongSymmetry() {
     })();
   }, [songRecommendation]);
 
+  useEffect(() => {
+    sdk.player.getCurrentlyPlayingTrack().then((track) => {
+      const currentTrack = track.item as Track;
+      dispatch(setCurrentTrack(currentTrack));
+      toast({
+        title: `You are listening to ${currentTrack.name} by ${currentTrack.artists[0].name}`,
+        description: `Want to find similar songs?`,
+      });
+    });
+  }, []);
+
   const debountSearch = debounce(onSearchTrack, 1000);
 
   const backAction = () => {
@@ -265,14 +278,14 @@ function SongSymmetry() {
     if (!songRecommendation) return null;
     return (
       <div className="w-full flex flex-col space-y-8 justify-center items-center">
-        <div className="w-full flex flex-col space-y-3 sm:flex-row md:space-x-4 justify-start md:items-end">
-          <div className="h-[200px] sm:h-[350px] sm:w-[40%] md:w-[40%] ld:w-[35%] xl:w-[40%] flex flex-row items-start justify-between space-x-2 sm:space-x-4 md:space-x-6 p-6 rounded-xl bg-gray-900 overflow-hidden">
+        <div className="w-full flex flex-col space-y-4 sm:flex-row sm:space-y-0 space-x-2 md:space-x-4 justify-start md:items-end">
+          <div className="h-[200px] sm:h-[350px] sm:w-[40%] md:w-[40%] ld:w-[40%] xl:w-[50%] flex flex-row items-start justify-start space-x-4 sm:space-x-4 md:space-x-6 p-6 rounded-xl bg-gray-900 overflow-hidden">
             <div className="flex flex-col space-y-2 sm:space-y-4">
               <div className="relative h-full">
                 <img
                   src={songRecommendation.source.album.images[0].url}
                   alt=""
-                  className="object-contain aspect-square rounded-md w-full h-full max-w-[250px]"
+                  className="object-contain aspect-square rounded-md w-full h-full max-w-[100px] md:max-w-[150px] lg:max-w-[200px]"
                 />
                 <div
                   className={`h-full w-full absolute top-0 left-0 flex justify-center items-center opacity-0 hover:opacity-100 cursor-pointer`}
@@ -283,7 +296,7 @@ function SongSymmetry() {
               </div>
               <div className="flex flex-col space-y-1">
                 <div className="w-full flex flex-tow items-start justify-start space-x-2">
-                  <h1 className="w-full line-clamp-1 text-lg sm:text-2xl md:text-3xl font-bold sm:font-extrabold text-white">
+                  <h1 className="w-full line-clamp-2 text-lg sm:text-2xl md:text-3xl font-bold sm:font-extrabold text-white">
                     {songRecommendation.source.name}
                   </h1>
                   {songRecommendation.source.explicit && (
@@ -365,7 +378,7 @@ function SongSymmetry() {
               </Dialog>
             </div>
           </div>
-          <div className="sm:h-[350px] sm:w-[60%] md:w-[60%] ld:w-[65%] xl:w-[60%] w-auto flex flex-col space-y-6 items-start justify-between p-6 rounded-xl bg-gray-900">
+          <div className="sm:h-[350px] sm:w-[60%] md:w-[60%] ld:w-[60%] xl:w-[50%] w-auto flex flex-col space-y-6 items-start justify-between p-6 rounded-xl bg-gray-900">
             <h3 className="text-md text-left font-bold text-gray-300">
               Audio Features
             </h3>
@@ -392,6 +405,7 @@ function SongSymmetry() {
       </div>
     );
   };
+
   const renderSongSimilarity = () => {
     return (
       <div className="w-full flex flex-col space-y-8 p-8 rounded-xl bg-gray-900">
