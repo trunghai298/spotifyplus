@@ -266,8 +266,8 @@ function SongSymmetry() {
     return (
       <div className="w-full flex flex-col space-y-8 justify-center items-center">
         <div className="w-full flex flex-col space-y-3 md:flex-row md:space-x-4 justify-start md:items-end">
-          <div className="h-[200px] sm:h-[350px] flex flex-row items-start justify-between space-x-2 sm:space-x-4 md:space-x-6 p-6 rounded-xl bg-gray-900 overflow-hidden">
-            <div className="flex flex-col space-y-2 sm:space-y-4 w-[100px] sm:w-[150px] md:w-[200px] lg:w-[220px]">
+          <div className="h-[200px] sm:h-[350px] min-w-[200px] flex flex-row items-start justify-between space-x-2 sm:space-x-4 md:space-x-6 p-6 rounded-xl bg-gray-900 overflow-hidden">
+            <div className="flex flex-col space-y-2 sm:space-y-4 w-[100px] sm:w-[250px] md:w-[200px] lg:w-[220px]">
               <div className="relative h-full">
                 <img
                   src={songRecommendation.source.album.images[0].url}
@@ -365,7 +365,7 @@ function SongSymmetry() {
               </Dialog>
             </div>
           </div>
-          <div className="sm:h-[350px] flex flex-col grow space-y-6 items-start justify-between p-6 rounded-xl bg-gray-900">
+          <div className="sm:h-[350px] w-auto flex flex-col grow space-y-6 items-start justify-between p-6 rounded-xl bg-gray-900">
             <h3 className="text-md text-left font-bold text-gray-300">
               Audio Features
             </h3>
