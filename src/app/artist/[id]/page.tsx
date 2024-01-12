@@ -82,55 +82,53 @@ function ArtistPage({ params }: { params: { id: string } }) {
               </Link>
             </div>
           </div>
-          <div className="sm:mt-8 md:mt-0 lg:mt-0 xl:mt-0 overflow-scroll">
+          <div className="grow sm:mt-8 md:mt-0 lg:mt-0 xl:mt-0 overflow-scroll">
             <h2 className="text-2xl font-bold text-white mb-4">Top Tracks</h2>
             <table className="table-auto w-full">
               <thead className="border-b-[0.5px] border-gray-500">
                 <tr>
-                  <th className="text-left text-gray-400 min-w-[30px] sm:min-w-[50px] text-sm">
-                    #
-                  </th>
-                  <th className="text-left text-gray-400 min-w-[80px] sm:min-w-[100px] md:min-w-[150px] lg:min-w-[200px] xl:min-w-[300px] text-sm">
-                    Title
-                  </th>
-                  <th className="text-left text-gray-400 min-w-[80px] sm:min-w-[100px] md:min-w-[150px] lg:min-w-[200px] xl:min-w-[300px] text-sm">
-                    Album
-                  </th>
+                  <th className="text-left text-gray-400 text-sm">#</th>
+                  <th className="text-left text-gray-400 text-sm">Title</th>
+                  <th className="text-left text-gray-400 text-sm">Album</th>
                   <th className="text-left">
-                    <i className="bi bi-clock text-white hidden md:inline w-[10px] h-[10px]" />
+                    <i className="bi bi-clock text-white w-[10px] h-[10px]" />
                   </th>
                 </tr>
               </thead>
               <tbody className="border-t-[15px] border-transparent">
                 {topTracks?.tracks.map((track, index) => (
-                  <tr key={track.id} className="h-auto sm:h-[30px] md:h-[50px]">
+                  <tr key={track.id} className="h-[40px]">
                     <td className="text-white">
-                      <h2 className="text-gray-400">{index + 1}</h2>
+                      <h2 className="text-gray-400 text-sm">{index + 1}</h2>
                     </td>
-                    <td className="flex items-center w-full h-full min-h-[40px] max-w-[300px] gap-x-2 text-white hover:underline hover:cursor-pointer overflow-ellipsis">
-                      <img
-                        src={track.album.images[0].url}
-                        alt=""
-                        width={30}
-                        height={30}
-                        className="rounded-sm object-cover object-center"
-                      />
-                      <h2
-                        className="line-clamp-2"
-                        onClick={() => dispatch(setTrack(track))}
-                      >
-                        {track.name}
-                      </h2>
+                    <td className="min-h-[40px] max-w-[300px] gap-x-2 text-white hover:underline hover:cursor-pointer overflow-ellipsis">
+                      <div className="flex items-center gap-x-2">
+                        <img
+                          src={track.album.images[0].url}
+                          alt=""
+                          width={30}
+                          height={30}
+                          className="rounded-sm object-cover object-center"
+                        />
+                        <h2
+                          className="line-clamp-1 text-md font-bold"
+                          onClick={() => dispatch(setTrack(track))}
+                        >
+                          {track.name}
+                        </h2>
+                      </div>
                     </td>
                     <td
-                      className="text-gray-400 line-clamp-1 cursor-pointer hover:underline"
+                      className="text-gray-400 cursor-pointer hover:underline"
                       onClick={() =>
                         router.push(`/tracks?type=album&id=${track.album.id}`)
                       }
                     >
-                      {track.album.name}
+                      <h3 className="line-clamp-1 text-sm">
+                        {track.album.name}
+                      </h3>
                     </td>
-                    <td className="text-gray-400">
+                    <td className="text-gray-400 text-sm">
                       {millisToMinutesAndSeconds(track.duration_ms)}
                     </td>
                   </tr>
