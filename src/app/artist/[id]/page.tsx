@@ -16,28 +16,27 @@ import { useRouter } from "next/navigation";
 import { millisToMinutesAndSeconds } from "@/utils";
 import Link from "next/link";
 
-function ArtistPage() {
+function ArtistPage({ params }: { params: { id: string } }) {
   const [artist, setArtist] = useState<Artist>();
   const [albums, setAlbums] = useState<Page<SimplifiedAlbum>>();
   const [topTracks, setTracks] = useState<TopTracksResult>();
-
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const { id } = params;
 
   useEffect(() => {
     (async () => {
       window.scrollTo(0, 0);
-      const id = window.location.pathname.split("/")[2];
       const [artist, albums, topTracks] = await Promise.all([
         sdk.artists.get(id),
         sdk.artists.albums(id, "single,album"),
-        sdk.artists.topTracks(id, "KR"),
+        sdk.artists.topTracks(id, "US"),
       ]);
       setTracks(topTracks);
       setAlbums(albums);
       setArtist(artist);
     })();
-  }, []);
+  }, [id]);
 
   if (!artist || !albums) {
     return <Loader />;
