@@ -232,28 +232,17 @@ function SongSymmetry() {
     (async () => {
       try {
         const res = await fetch(
-          `/api/lyrics?song=${songRecommendation.source.name}&artist=${songRecommendation.source.artists[0].name}`
+          `https://lyrist.vercel.app/api/${songRecommendation.source.name}/${songRecommendation.source.artists[0].name}`
         );
         const resJson = await res.json();
-        if (resJson.status === 200) {
-          setSongLyrics(resJson.lyrics);
-        } else {
-          if (resJson.status === 429) {
-            setSongLyrics("failed");
-            toast({
-              title: "Rate limit exceeded!",
-              description: "Please try again later.",
-            });
-            return;
-          } else {
-            setSongLyrics("not found");
-            toast({
-              title: "Lyrics not found!",
-              description: "Please try again later.",
-            });
-          }
-        }
-      } catch (error: any) {}
+        setSongLyrics(resJson.lyrics);
+      } catch (error: any) {
+        setSongLyrics("not found");
+        toast({
+          title: "Lyrics not found!",
+          description: "Please try again later.",
+        });
+      }
     })();
   }, [songRecommendation]);
 
