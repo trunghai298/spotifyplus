@@ -1,12 +1,11 @@
 import { Client } from "genius-lyrics";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export const GET = async (req: Request, res: Response) => {
+export const GET = async (req: NextRequest, res: Response) => {
   try {
     const client = new Client();
-    const url = new URL(req.url);
-    const songName = url.searchParams.get("song");
-    const artistName = url.searchParams.get("artist");
+    const songName = req.nextUrl.searchParams.get("song");
+    const artistName = req.nextUrl.searchParams.get("artist");
     const searches = await client.songs.search(songName + " " + artistName);
     const song = searches[0];
     const lyrics = await song?.lyrics();
