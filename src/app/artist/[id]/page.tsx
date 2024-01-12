@@ -53,15 +53,13 @@ function ArtistPage({ params }: { params: { id: string } }) {
             }}
           />
         </div>
-        <div className="w-full flex flex-col gap-x-10 md:flex-row">
-          <div className="min-w-[300px] flex flex-col justify-start items-center">
+        <div className="w-full flex flex-col gap-x-8 md:flex-row">
+          <div className="flex flex-col justify-start items-start">
             {artist.images.length > 0 && (
               <img
                 src={artist.images[0].url}
                 alt=""
-                width={400}
-                height={400}
-                className="max-h-[200px] sm:max-h-[250px] md:max-h-[250px] lg:max-h-[300px] w-full aspect-square object-cover object-center rounded-lg shadow-md"
+                className="w-full aspect-video md:max-w-[250px] md:aspect-square object-cover object-center rounded-lg shadow-md"
               />
             )}
             <div className="w-full py-4">
@@ -125,14 +123,14 @@ function ArtistPage({ params }: { params: { id: string } }) {
                       </h2>
                     </td>
                     <td
-                      className="text-gray-400 cursor-pointer hover:underline"
+                      className="text-gray-400 line-clamp-1 cursor-pointer hover:underline"
                       onClick={() =>
                         router.push(`/tracks?type=album&id=${track.album.id}`)
                       }
                     >
                       {track.album.name}
                     </td>
-                    <td className="text-gray-400 hidden md:inline">
+                    <td className="text-gray-400">
                       {millisToMinutesAndSeconds(track.duration_ms)}
                     </td>
                   </tr>
