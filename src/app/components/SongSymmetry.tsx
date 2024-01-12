@@ -265,14 +265,14 @@ function SongSymmetry() {
     if (!songRecommendation) return null;
     return (
       <div className="w-full flex flex-col space-y-8 justify-center items-center">
-        <div className="w-full flex flex-col space-y-3 md:flex-row md:space-x-4 justify-start md:items-end">
-          <div className="h-[200px] sm:h-[350px] min-w-[200px] flex flex-row items-start justify-between space-x-2 sm:space-x-4 md:space-x-6 p-6 rounded-xl bg-gray-900 overflow-hidden">
-            <div className="flex flex-col space-y-2 sm:space-y-4 w-[100px] sm:w-[250px] md:w-[200px] lg:w-[220px]">
+        <div className="w-full flex flex-col space-y-3 sm:flex-row md:space-x-4 justify-start md:items-end">
+          <div className="h-[200px] sm:h-[350px] sm:w-[40%] md:w-[40%] ld:w-[35%] xl:w-[40%] flex flex-row items-start justify-between space-x-2 sm:space-x-4 md:space-x-6 p-6 rounded-xl bg-gray-900 overflow-hidden">
+            <div className="flex flex-col space-y-2 sm:space-y-4">
               <div className="relative h-full">
                 <img
                   src={songRecommendation.source.album.images[0].url}
                   alt=""
-                  className="object-contain rounded-md w-full h-full"
+                  className="object-contain aspect-square rounded-md w-full h-full max-w-[250px]"
                 />
                 <div
                   className={`h-full w-full absolute top-0 left-0 flex justify-center items-center opacity-0 hover:opacity-100 cursor-pointer`}
@@ -365,7 +365,7 @@ function SongSymmetry() {
               </Dialog>
             </div>
           </div>
-          <div className="sm:h-[350px] w-auto flex flex-col grow space-y-6 items-start justify-between p-6 rounded-xl bg-gray-900">
+          <div className="sm:h-[350px] sm:w-[60%] md:w-[60%] ld:w-[65%] xl:w-[60%] w-auto flex flex-col space-y-6 items-start justify-between p-6 rounded-xl bg-gray-900">
             <h3 className="text-md text-left font-bold text-gray-300">
               Audio Features
             </h3>
