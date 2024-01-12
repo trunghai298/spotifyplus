@@ -279,20 +279,20 @@ function SongSymmetry() {
     return (
       <div className="w-full flex flex-col space-y-8 justify-center items-center">
         <div className="w-full flex flex-col space-y-4 sm:flex-row sm:space-y-0 space-x-2 md:space-x-4 justify-start md:items-end">
-          <div className="h-[200px] sm:h-[350px] sm:w-[40%] md:w-[40%] ld:w-[40%] xl:w-[50%] flex flex-row items-start justify-start space-x-4 sm:space-x-4 md:space-x-6 p-6 rounded-xl bg-gray-900 overflow-hidden">
-            <div className="flex flex-col space-y-2 sm:space-y-4">
+          <div className="h-[220px] sm:h-[350px] sm:w-[40%] md:w-[40%] ld:w-[40%] xl:w-[50%] flex flex-row items-start justify-start space-x-4 sm:space-x-2 md:space-x-4 p-3 sm:p-6 rounded-xl bg-gray-900 overflow-hidden">
+            <div className="flex flex-col max-w-[40%] space-y-2 sm:space-y-4">
               <div className="relative h-full">
                 <img
                   src={songRecommendation.source.album.images[0].url}
                   alt=""
-                  className="object-contain aspect-square rounded-md w-full h-full max-w-[100px] md:max-w-[150px] lg:max-w-[200px]"
+                  className="object-contain rounded-md w-full h-full max-w-[100px] md:max-w-[150px] lg:max-w-[200px]"
                 />
-                <div
+                {/* <div
                   className={`h-full w-full absolute top-0 left-0 flex justify-center items-center opacity-0 hover:opacity-100 cursor-pointer`}
                   onClick={() => dispatch(setTrack(songRecommendation.source))}
                 >
                   <i className="bi bi-play-circle-fill text-gray-300 text-4xl"></i>
-                </div>
+                </div> */}
               </div>
               <div className="flex flex-col space-y-1">
                 <div className="w-full flex flex-tow items-start justify-start space-x-2">
@@ -325,7 +325,7 @@ function SongSymmetry() {
               <h3 className="text-md text-left font-bold text-gray-300">
                 Lyrics
               </h3>
-              <div className="h-[50%] sm:h-[80%] p-y-2 overflow-hidden text-ellipsis">
+              <div className="h-[60%] sm:h-[80%] p-y-2 overflow-hidden text-ellipsis">
                 {songLyrics === "loading" ? (
                   <h4 className="text-sm text-left font-thin text-gray-400">
                     Loading...
@@ -378,7 +378,7 @@ function SongSymmetry() {
               </Dialog>
             </div>
           </div>
-          <div className="sm:h-[350px] sm:w-[60%] md:w-[60%] ld:w-[60%] xl:w-[50%] w-auto flex flex-col space-y-6 items-start justify-between p-6 rounded-xl bg-gray-900">
+          <div className="h-[200px] sm:h-[350px] sm:w-[60%] md:w-[60%] ld:w-[60%] xl:w-[50%] w-auto flex flex-col space-y-6 items-start justify-between p-6 rounded-xl bg-gray-900">
             <h3 className="text-md text-left font-bold text-gray-300">
               Audio Features
             </h3>
