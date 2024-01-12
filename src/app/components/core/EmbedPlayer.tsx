@@ -55,6 +55,7 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
     ele.addEventListener("mousedown", mouseDownHandler);
     ele.addEventListener("mouseup", mouseUpHandler);
     ele.addEventListener("touchstart", mouseDownHandler);
+    ele.addEventListener("touchmove", mouseDownHandler);
     ele.addEventListener("touchcancel", mouseUpHandler);
     ele.addEventListener("touchend", mouseUpHandler);
 
@@ -64,6 +65,7 @@ export const EmbedPlayer: FC<HTMLAttributes<HTMLDivElement>> = () => {
       ele.removeEventListener("touchstart", mouseDownHandler);
       ele.removeEventListener("touchcancel", mouseUpHandler);
       ele.removeEventListener("touchend", mouseUpHandler);
+      ele.removeEventListener("touchmove", mouseDownHandler);
     };
   }, [track, state]);
 
