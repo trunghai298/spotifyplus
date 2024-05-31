@@ -25,6 +25,7 @@ import { Loader } from "../components/core/Loader";
 import TracksGrid from "../components/TracksGrid";
 import { setOpenSubscribeDialog } from "@/lib/redux/slices/subscribeSlices";
 import { useToast } from "@/components/ui/use-toast";
+import "./style.css";
 
 type SongRecommendation = {
   source: Track;
@@ -52,7 +53,15 @@ function SongSymmetry() {
   const [songRecommendation, setSongRecommendation] =
     useState<SongRecommendation>();
   const [playlist, setPlaylist] = useState<{
-    state: "idle" | "loading" | "success" | "error";
+    state:
+      | "idle"
+      | "saving"
+      | "saved"
+      | "loading"
+      | "success"
+      | "error"
+      | "refreshing"
+      | "refreshed";
     playlist?: Playlist;
   }>({ state: "idle" });
   const [recommendationState, setRecommendationState] = useState({
@@ -137,6 +146,29 @@ function SongSymmetry() {
       nextTrackId: "",
     });
     setSongRecommendation({ source: track, recommendation: results });
+  };
+
+  const onRefreshRecommendation = async () => {
+    try {
+      setPlaylist({ state: "refreshing" });
+      await onGetRecommendation(
+        songRecommendation?.source as Track,
+        audioFeatures as unknown as AudioFeatures
+      );
+    } catch (error) {}
+    setPlaylist({ state: "refreshed" });
+  };
+
+  const onAddToQueue = async () => {
+    try {
+      setPlaylist({ state: "saving" });
+      await Promise.all(
+        map(songRecommendation?.recommendation.tracks, (track) => {
+          return sdk.player.addItemToPlaybackQueue(track.uri);
+        })
+      );
+    } catch (error) {}
+    setPlaylist({ state: "saved" });
   };
 
   const onSavePlaylist = async () => {
@@ -250,6 +282,7 @@ function SongSymmetry() {
 
   useEffect(() => {
     sdk.player.getCurrentlyPlayingTrack().then((track) => {
+      if (!track) return;
       const currentTrack = track.item as Track;
       dispatch(setCurrentTrack(currentTrack));
       toast({
@@ -409,21 +442,50 @@ function SongSymmetry() {
   const renderSongSimilarity = () => {
     return (
       <div className="w-full flex flex-col space-y-8 p-8 rounded-xl bg-gray-900">
-        <div className="w-full flex flex-col space-y-2 sm:flex-row justify-between items-center">
+        <div className="w-full flex flex-col md:flex-row space-y-2 justify-between items-center">
           <h3 className="text-xl sm:text-3xl text-left font-bold text-spotify-green-dark flex">
             Songs Have Similar Vibes
           </h3>
-          <Button
-            size={"lg"}
-            className="flex items-center flex-row justify-center sm:justify-between space-x-2  bg-spotify-green-dark hover:bg-spotify-green-light disabled:bg-spotify-green-dark rounded-3xl"
-            onClick={onSavePlaylist}
-            disabled={playlist.state === "loading"}
-          >
-            <i className="bi bi-spotify text-white text-2xl" />
-            <h3 className="text-white text-sm font-bold uppercase">
-              {playlist.state === "loading" ? "Saving..." : "Save Playlist"}
-            </h3>
-          </Button>
+          <div className="flex flex-col md:flex-row justify-between gap-3">
+            <Button
+              size={"lg"}
+              className="button-85 flex gap-1"
+              onClick={onRefreshRecommendation}
+              disabled={playlist.state === "refreshing"}
+            >
+              <i className="bi bi-arrow-clockwise text-white text-2xl" />
+              <h3 className="text-white text-md font-bold">
+                {playlist.state === "refreshing"
+                  ? "Generating..."
+                  : "Regenerate"}
+              </h3>
+            </Button>
+
+            <Button
+              size={"lg"}
+              className="flex items-center flex-row justify-center sm:justify-between space-x-2  bg-spotify-green-dark hover:bg-spotify-green-light disabled:bg-spotify-green-dark rounded-3xl"
+              onClick={onAddToQueue}
+              disabled={playlist.state === "saving"}
+            >
+              <i className="bi bi-vinyl-fill text-white text-2xl" />
+              <h3 className="text-white text-md font-bold">
+                {playlist.state === "saving"
+                  ? "Saving..."
+                  : "Add Songs to Queue"}
+              </h3>
+            </Button>
+            <Button
+              size={"lg"}
+              className="flex items-center flex-row justify-center sm:justify-between space-x-2  bg-spotify-green-dark hover:bg-spotify-green-light disabled:bg-spotify-green-dark rounded-3xl"
+              onClick={onSavePlaylist}
+              disabled={playlist.state === "loading"}
+            >
+              <i className="bi bi-spotify text-white text-2xl" />
+              <h3 className="text-white text-md font-bold">
+                {playlist.state === "loading" ? "Saving..." : "Save Playlist"}
+              </h3>
+            </Button>
+          </div>
         </div>
         <div className="w-full rounded-sm flex flex-col space-y-4">
           {songRecommendation?.recommendation.tracks.map((track) => {
@@ -544,7 +606,8 @@ function SongSymmetry() {
   };
 
   const renderRecommendations = () => {
-    if (recommendationState.fetching) return <Loader />;
+    if (recommendationState.fetching && playlist.state !== "refreshing")
+      return <Loader />;
     return (
       <div className="w-full flex flex-col space-y-8 justify-center items-center">
         {backAction()}
