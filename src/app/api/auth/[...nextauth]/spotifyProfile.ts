@@ -29,6 +29,7 @@ const scopes = [
   "user-library-modify",
   "user-library-read",
   "user-follow-read",
+  "user-read-private",
 ];
 
 authURL.searchParams.append("scope", scopes.join(" "));

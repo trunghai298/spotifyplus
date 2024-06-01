@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "../../lib/redux/hooks";
 import { useRouter } from "next/navigation";
 import sdk from "../../lib/spotify-sdk/ClientInstance";
 import Container from "../components/core/Container";
-import { debounce, map, omit, set } from "lodash";
+import { debounce, forEach, map, omit } from "lodash";
 import { AudioFeatures, Page, Playlist, Track } from "@spotify/web-api-ts-sdk";
 import { setCurrentTrack, setTrack } from "../../lib/redux/slices/playerSlices";
 import Tooltip from "../components/Tooltip";
@@ -116,13 +116,14 @@ function SongSymmetry() {
     const sortVibes = Object.entries(audioVibes)
       .sort((a, b) => a[1] - b[1])
       .reverse();
+    const rcmArguments: { [key: string]: any } = {};
 
-    const rcmArguments = {
-      [`min_${sortVibes[0][0]}`]: sortVibes[0][1] - 0.1,
-      [`max_${sortVibes[0][0]}`]: sortVibes[0][1] + 0.1,
-      [`min_${sortVibes[1][0]}`]: sortVibes[1][1] - 0.1,
-      [`max_${sortVibes[1][0]}`]: sortVibes[1][1] + 0.1,
-    };
+    forEach(sortVibes, (vibe) => {
+      if (!vibe[1]) return;
+      rcmArguments[`min_${vibe[0]}`] = vibe[1] - 0.5 < 0 ? 0 : vibe[1] - 0.5;
+      rcmArguments[`max_${vibe[0]}`] = vibe[1] + 0.5;
+    });
+
     return rcmArguments;
   };
 
@@ -135,6 +136,7 @@ function SongSymmetry() {
       ? audioFeaturesInput
       : await sdk.tracks.audioFeatures(track.id);
     const rcmArguments = await recommendationAlgorithm(audioFeatures);
+
     const results = await sdk.recommendations.get({
       seed_tracks: [track.id],
       ...rcmArguments,
@@ -155,19 +157,49 @@ function SongSymmetry() {
         songRecommendation?.source as Track,
         audioFeatures as unknown as AudioFeatures
       );
+      toast({
+        title: "Recommendation refreshed!",
+        description: "Enjoy the new songs.",
+      });
     } catch (error) {}
     setPlaylist({ state: "refreshed" });
   };
 
   const onAddToQueue = async () => {
     try {
+      const user = await sdk.currentUser.profile();
+      if (!user) return;
+      if (user.product !== "premium") {
+        toast({
+          title: "Premium Required!",
+          description: "Please upgrade to premium to use this feature.",
+        });
+        return;
+      }
+
+      const playing = await sdk.player.getCurrentlyPlayingTrack();
+      if (!playing) {
+        toast({
+          title: "No active device!",
+          description: "Please play a song to use this feature.",
+        });
+        return;
+      }
+
       setPlaylist({ state: "saving" });
       await Promise.all(
         map(songRecommendation?.recommendation.tracks, (track) => {
           return sdk.player.addItemToPlaybackQueue(track.uri);
         })
       );
-    } catch (error) {}
+
+      toast({
+        title: "Songs added to queue 🥳!",
+        description: "Enjoy the music.",
+      });
+    } catch (error) {
+      console.log("error", error);
+    }
     setPlaylist({ state: "saved" });
   };
 
@@ -446,7 +478,7 @@ function SongSymmetry() {
           <h3 className="text-xl sm:text-3xl text-left font-bold text-spotify-green-dark flex">
             Songs Have Similar Vibes
           </h3>
-          <div className="flex flex-col md:flex-row justify-between gap-3">
+          <div className="flex flex-col md:flex-row justify-between gap-4 ms:gap-3">
             <Button
               size={"lg"}
               className="button-85 flex gap-1"
