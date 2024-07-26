@@ -26,6 +26,7 @@ import TracksGrid from "../components/TracksGrid";
 import { setOpenSubscribeDialog } from "@/lib/redux/slices/subscribeSlices";
 import { useToast } from "@/components/ui/use-toast";
 import "./style.css";
+import { ToastAction } from "@/components/ui/toast";
 
 type SongRecommendation = {
   source: Track;
@@ -165,7 +166,7 @@ function SongSymmetry() {
     setPlaylist({ state: "refreshed" });
   };
 
-  const onAddToQueue = async () => {
+  const checkUserPermission = async () => {
     try {
       const user = await sdk.currentUser.profile();
       if (!user) return;
@@ -185,11 +186,35 @@ function SongSymmetry() {
         });
         return;
       }
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Error!",
+        description: "Please try again later.",
+      });
+    }
+  };
 
+  const onAddSongToQueue = async (trackUri: string) => {
+    await checkUserPermission();
+    await sdk.player.addItemToPlaybackQueue(trackUri);
+    toast({
+      title: "Song added to queue 🥳!",
+      description: "Enjoy the music.",
+    });
+  };
+
+  const addAllSongsToQueue = async () => {
+    try {
       setPlaylist({ state: "saving" });
+
+      await checkUserPermission();
+      const uris = songRecommendation?.recommendation.tracks.map(
+        (track) => track.uri
+      );
       await Promise.all(
-        map(songRecommendation?.recommendation.tracks, (track) => {
-          return sdk.player.addItemToPlaybackQueue(track.uri);
+        map(uris, async (uri) => {
+          return sdk.player.addItemToPlaybackQueue(uri);
         })
       );
 
@@ -197,10 +222,14 @@ function SongSymmetry() {
         title: "Songs added to queue 🥳!",
         description: "Enjoy the music.",
       });
+      setPlaylist({ state: "saved" });
     } catch (error) {
       console.log("error", error);
+      toast({
+        title: "Error!",
+        description: "Please try again later.",
+      });
     }
-    setPlaylist({ state: "saved" });
   };
 
   const onSavePlaylist = async () => {
@@ -320,6 +349,14 @@ function SongSymmetry() {
       toast({
         title: `You are listening to ${currentTrack.name} by ${currentTrack.artists[0].name}`,
         description: `Want to find similar songs?`,
+        action: (
+          <ToastAction
+            altText="Find similar songs"
+            onClick={() => onFindSimilarSongs(currentTrack.id)}
+          >
+            Find
+          </ToastAction>
+        ),
       });
     });
   }, []);
@@ -471,6 +508,16 @@ function SongSymmetry() {
     );
   };
 
+  const onFindSimilarSongs = (trackId: string) => {
+    router.replace(`?trackId=${trackId}`);
+    setRecommendationState({
+      fetching: false,
+      fetchNext: true,
+      nextTrackId: trackId,
+    });
+    setSongLyrics("loading");
+  };
+
   const renderSongSimilarity = () => {
     return (
       <div className="w-full flex flex-col space-y-8 p-8 rounded-xl bg-gray-900">
@@ -496,7 +543,7 @@ function SongSymmetry() {
             <Button
               size={"lg"}
               className="flex items-center flex-row justify-center sm:justify-between space-x-2  bg-spotify-green-dark hover:bg-spotify-green-light disabled:bg-spotify-green-dark rounded-3xl"
-              onClick={onAddToQueue}
+              onClick={addAllSongsToQueue}
               disabled={playlist.state === "saving"}
             >
               <i className="bi bi-vinyl-fill text-white text-2xl" />
@@ -558,19 +605,23 @@ function SongSymmetry() {
                       {/* Similarity: {calculateCosineSimilarity(track)} */}
                     </h3>
                   </div>
+                  <Tooltip text="Add this song to queue">
+                    <i
+                      className="bi bi-vinyl-fill text-white text-xl"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        onAddSongToQueue(track.uri);
+                      }}
+                    />
+                  </Tooltip>
                   <Tooltip text="Get Similar Songs">
                     <i
                       className="bi bi-search text-white text-xl"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        router.replace(`?trackId=${track.id}`);
-                        setRecommendationState({
-                          fetching: false,
-                          fetchNext: true,
-                          nextTrackId: track.id,
-                        });
-                        setSongLyrics("loading");
+                        onFindSimilarSongs(track.id);
                       }}
                     />
                   </Tooltip>

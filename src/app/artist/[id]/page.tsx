@@ -72,6 +72,9 @@ function ArtistPage({ params }: { params: { id: string } }) {
               <p className="text-white text-md font-medium">
                 {artist.followers.total} Followers
               </p>
+              <p className="text-white text-md font-medium">
+                Popularity score: {artist.popularity}
+              </p>
               <Link
                 href={artist.external_urls.spotify}
                 target="_blank"
